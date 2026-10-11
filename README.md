@@ -4,7 +4,7 @@ Online MCQ quiz for intern doctors, run by Moxaclav (Square Pharmaceuticals PLC)
 
 Two ways to run it:
 
-1. **Demo (no server)**: open `demo/battle-of-interns-demo.html` in any browser, or visit the GitHub Pages copy at https://squaregroupdm.github.io/BattleofInterns/ . Everything is stored in that browser only. Use it for management approval.
+1. **Demo (no server)**: open `demo/battle-of-interns-demo.html` in any browser. Everything is stored in that browser only. Use it for management approval.
 2. **Live site (PHP + SQLite)**: upload the `public` folder to any web host that runs PHP 8. Shared across all participants, with a real ranking board and admin panel.
 
 ---
@@ -22,13 +22,15 @@ Two ways to run it:
 | Skip and return | "Skip for now" moves the question to the end of the queue. After the last question, skipped ones come back in order, marked "back for a second look". The dot strip under the question shows answered (teal), skipped (amber) and current. |
 | Finish early | Available at any time, with a confirmation that shows how many questions are still unanswered. |
 | Results and learning | Score, correct/wrong/unanswered, time taken, current rank. The "Learn from mistakes" tab shows every wrong or unanswered question with the correct option highlighted and the explanation. "All 30 questions" shows the full review. |
-| Ranking board | Score first, then faster time, then earlier finish. Top 50 shown, the participant's own row highlighted. Admin can hide the board from participants. |
+| Ranking board | 1 point per correct answer, 0 for wrong or unanswered (no negative marking). Ties are broken by faster completion time, then by earlier submission. Finishing early never adds points; it only decides ties. Top 50 shown, the participant's own row highlighted. Admin can hide the board from participants. |
 | Resume safety | Progress is saved to the server after every answer. Refreshing the page continues where the doctor left off. |
 | Anti-cheat signals | Correct answers never leave the server during the quiz (scoring is done server-side). Tab switches and app switches are counted and shown to admin. Submissions that arrive more than 20 seconds after the deadline are scored from the last saved progress and flagged "late". |
 | Quiz window | Admin can set open/close date-times, or pause registration with one tick box. Outside the window the page explains and still offers the ranking board. |
 | Mobile first | Designed for phones; also works on desktop. Light and dark mode follow the device setting. |
 
 **Admin panel (`index.html#admin`)**
+
+There is no link to the admin panel on the quiz page on purpose. Open it by adding `#admin` to the quiz address, e.g. `https://your-domain/battle/#admin`.
 
 | Tab | What you can do |
 |---|---|

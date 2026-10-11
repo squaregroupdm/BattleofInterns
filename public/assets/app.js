@@ -14,6 +14,46 @@
     del(k) { try { localStorage.removeItem(k); } catch (e) {} },
   };
 
+
+  /* ---------------- Background and hero art (original line-art) ---------------- */
+  const MOTIFS = `
+    <g transform="rotate(-18 46 48)"><rect x="18" y="38" width="56" height="20" rx="10"/><path d="M74 48c6-6 10 6 16 0M74 48c8 4 12-2 18 2"/></g>
+    <g><circle cx="150" cy="38" r="7"/><circle cx="164" cy="32" r="7"/><circle cx="158" cy="48" r="7"/><circle cx="172" cy="46" r="7"/></g>
+    <g transform="rotate(34 214 118)"><rect x="190" y="109" width="48" height="18" rx="9"/><path d="M214 109v18"/><circle cx="226" cy="118" r="1.6"/><circle cx="232" cy="114" r="1.2"/><circle cx="231" cy="122" r="1.2"/></g>
+    <g><path d="M70 136l17 10v20l-17 10-17-10v-20z"/><circle cx="70" cy="136" r="3"/><circle cx="87" cy="166" r="3"/><circle cx="53" cy="166" r="3"/></g>
+    <path d="M118 206c6-14 14-14 20 0s14 14 20 0 14-14 20 0 14 14 20 0"/>
+    <g><path d="M200 238c0-30 12-42 40-40-2 28-14 40-40 40z"/><path d="M200 238c12-12 22-22 34-34"/></g>
+    <g><circle cx="42" cy="232" r="10"/><path d="M42 218v-6M42 246v6M28 232h-6M56 232h6M32 222l-4-4M52 242l4 4M52 222l4-4M32 242l-4 4"/></g>
+    <path d="M118 96h10M123 91v10"/><circle cx="236" cy="22" r="2"/><circle cx="110" cy="248" r="2"/><circle cx="12" cy="120" r="2"/>
+    <g transform="rotate(20 150 130)"><rect x="128" y="123" width="44" height="14" rx="7"/></g>`;
+  const BG_ART = `
+    <div class="bgart" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <defs>
+        <pattern id="boiPat" width="260" height="260" patternUnits="userSpaceOnUse">${MOTIFS}</pattern>
+        <pattern id="boiPat2" width="260" height="260" patternUnits="userSpaceOnUse" patternTransform="scale(1.7)">${MOTIFS}</pattern>
+      </defs>
+      <g class="drift2" opacity="0.22"><rect x="-1200" y="-1200" width="400%" height="400%" fill="url(#boiPat2)" stroke="none"/></g>
+      <g class="drift1" opacity="0.42"><rect x="0" y="0" width="300%" height="300%" fill="url(#boiPat)" stroke="none"/></g>
+    </svg>
+    <svg class="floater f1" viewBox="-30 -30 60 60" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="0" cy="0" r="10"/><path d="M0-14v-6M0 14v6M-14 0h-6M14 0h6M-10-10l-4-4M10 10l4 4M10-10l4-4M-10 10l-4 4"/></svg>
+    <svg class="floater f2" viewBox="-34 -22 68 44" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><g transform="rotate(-20)"><rect x="-26" y="-9" width="52" height="18" rx="9"/><path d="M0-9v18"/><circle cx="12" cy="0" r="1.6"/><circle cx="18" cy="-4" r="1.2"/><circle cx="17" cy="4" r="1.2"/></g></svg>
+    <svg class="floater f3" viewBox="-12 -16 44 36" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="0" cy="0" r="7"/><circle cx="14" cy="-6" r="7"/><circle cx="8" cy="10" r="7"/><circle cx="22" cy="8" r="7"/></svg>
+    </div>`;
+  const HERO_ART = `
+    <svg class="hero-art" viewBox="0 0 150 190" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <g transform="rotate(-28 75 95)">
+        <rect x="42" y="16" width="66" height="158" rx="33"/>
+        <path d="M42 95h66"/>
+        <g class="acc"><circle cx="64" cy="46" r="6"/><circle cx="78" cy="40" r="6"/><circle cx="72" cy="56" r="6"/><circle cx="86" cy="54" r="6"/>
+          <g transform="rotate(-20 75 78)"><rect x="56" y="72" width="38" height="12" rx="6"/></g>
+          <path d="M60 30c4-4 8 2 12-2"/></g>
+        <path d="M75 112l12 7v14l-12 7-12-7v-14z"/><circle cx="75" cy="112" r="2"/><circle cx="87" cy="133" r="2"/><circle cx="63" cy="133" r="2"/>
+        <path d="M58 160c0-16 7-23 22-22-1 15-8 22-22 22z"/><path d="M58 160l16-16"/>
+        <path d="M94 150c4-6 10-6 14 0"/>
+      </g>
+      <g class="acc" transform="translate(118 150)"><circle cx="0" cy="0" r="12"/><path d="M0-16v-5M0 16v5M-16 0h-5M16 0h5M-11-11l-4-4M11 11l4 4M11-11l4-4M-11 11l-4 4"/></g>
+    </svg>`;
+
   let settings = { campaignName: "Battle of Interns", sponsor: "Moxaclav", durationSec: 600, questionCount: 30, leaderboardPublic: true, status: "open" };
   let toastTimer = null;
 
@@ -33,13 +73,14 @@
     });
   }
   function shell(inner, { wide = false, right = "" } = {}) {
+    if (!document.querySelector(".bgart")) document.body.insertAdjacentHTML("afterbegin", BG_ART);
     $app.innerHTML = `
       <header class="topbar"><div class="topbar-in">
         <div class="brand"><span class="brand-name">${esc(settings.campaignName)}</span><span class="brand-sub">${esc(settings.sponsor)} &middot; World AMR Awareness Week</span></div>
         ${right}
       </div></header>
       <main class="wrap ${wide ? "wide" : ""}">${inner}</main>
-      <div class="footer">Square Pharmaceuticals PLC &middot; Digital Marketing, Business Development ${settings.demo ? '&middot; <span class="demo-badge">DEMO</span>' : ""} &middot; <a href="#admin">Admin</a></div>`;
+      <div class="footer">Square Pharmaceuticals PLC ${settings.demo ? '&middot; <span class="demo-badge">DEMO</span>' : ""}</div>`;
   }
 
   /* ---------------- Routing ---------------- */
@@ -74,9 +115,12 @@
       shell(`
         <div class="stack">
           <div class="hero">
-            <span class="eyebrow">Online quiz for intern doctors</span>
-            <h1>${esc(settings.campaignName)}</h1>
-            <p class="muted">Test your antimicrobial judgement. ${settings.questionCount} questions, ${Math.round(settings.durationSec / 60)} minutes, one attempt per doctor.</p>
+            <div class="hero-text">
+              <span class="eyebrow">Online quiz for intern doctors</span>
+              <h1>${esc(settings.campaignName)}</h1>
+              <p class="muted">Test your antimicrobial judgement. ${settings.questionCount} questions, ${Math.round(settings.durationSec / 60)} minutes, one attempt per doctor.</p>
+            </div>
+            ${HERO_ART}
           </div>
           <div class="card stack">
             <div class="rules">
@@ -191,7 +235,7 @@
             <div><span class="eyebrow">Question ${idx + 1} of ${total}</span><br><span class="small muted num">${answered} answered &middot; ${skippedCount} skipped</span></div>
             <div class="timer num" id="timer" aria-live="off"><span class="timer-dot"></span><span id="timeText">${mmss(Math.max(0, Math.ceil((a.endsAt - Date.now()) / 1000)))}</span></div>
           </div>
-          <div class="progress"><i style="width:${Math.round((answered / total) * 100)}%"></i></div>
+          <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${answered}"><i style="width:${(answered / total) * 100}%"></i><i class="skip" style="width:${(skippedCount / total) * 100}%"></i></div>
           ${revisit ? `<div class="alert info">You skipped this one earlier. It is back for a second look.</div>` : ""}
           <div class="card stack">
             <p class="qtext">${esc(q.text)}</p>
@@ -203,7 +247,6 @@
               <button class="btn primary" id="btnNext" type="button" disabled>Next</button>
             </div>
           </div>
-          <div class="dots" aria-hidden="true">${qs.map((x) => `<span class="dot ${x.id in Quiz.answers ? "done" : (Quiz.seen.has(x.id) && x.id !== qid ? "skip" : "")} ${x.id === qid ? "now" : ""}"></span>`).join("")}</div>
           <div class="row between"><span class="small muted">Answers lock when you press Next.</span><button class="btn ghost sm" id="btnFinish" type="button">Finish early</button></div>
         </div>`, { right: `<span class="pill accent num">${answered}/${total}</span>` });
 
