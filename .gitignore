@@ -1,0 +1,6 @@
+# the live database and its journal files (never commit participant data)
+data/*.sqlite
+data/*.sqlite-wal
+data/*.sqlite-shm
+.DS_Store
+Thumbs.db

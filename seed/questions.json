@@ -1,0 +1,332 @@
+[
+  {
+    "text": "Antimicrobial resistance (AMR) occurs when:",
+    "options": {
+      "A": "The patient becomes tolerant to an antibiotic after repeated use",
+      "B": "Microorganisms change so that antimicrobials no longer work against them",
+      "C": "The immune system stops responding to an infection",
+      "D": "An antibiotic degrades before reaching the site of infection"
+    },
+    "correct": "B",
+    "explanation": "AMR is a property of the microbe, not the patient. Bacteria, viruses, fungi and parasites evolve mechanisms that make the drugs designed to kill them ineffective."
+  },
+  {
+    "text": "World AMR Awareness Week is observed every year during:",
+    "options": {
+      "A": "1 to 7 April",
+      "B": "18 to 24 November",
+      "C": "10 to 16 October",
+      "D": "24 to 30 January"
+    },
+    "correct": "B",
+    "explanation": "WHO marks World AMR Awareness Week from 18 to 24 November each year to raise awareness and encourage best practices among the public, health workers and policy makers."
+  },
+  {
+    "text": "The role of clavulanic acid in amoxicillin-clavulanate is to:",
+    "options": {
+      "A": "Extend the half-life of amoxicillin",
+      "B": "Improve the oral absorption of amoxicillin",
+      "C": "Inhibit bacterial beta-lactamase enzymes",
+      "D": "Reduce the renal excretion of amoxicillin"
+    },
+    "correct": "C",
+    "explanation": "Clavulanic acid has little antibacterial activity of its own. It irreversibly binds and inactivates many beta-lactamases, protecting amoxicillin from hydrolysis."
+  },
+  {
+    "text": "Amoxicillin kills bacteria by:",
+    "options": {
+      "A": "Inhibiting protein synthesis at the 30S ribosomal subunit",
+      "B": "Inhibiting cell wall synthesis by binding penicillin-binding proteins",
+      "C": "Inhibiting DNA gyrase",
+      "D": "Disrupting the bacterial cell membrane"
+    },
+    "correct": "B",
+    "explanation": "Like all beta-lactams, amoxicillin binds penicillin-binding proteins and blocks peptidoglycan cross-linking, leading to cell lysis. It is bactericidal."
+  },
+  {
+    "text": "Which organism is intrinsically resistant to amoxicillin-clavulanate?",
+    "options": {
+      "A": "Streptococcus pneumoniae",
+      "B": "Haemophilus influenzae",
+      "C": "Pseudomonas aeruginosa",
+      "D": "Moraxella catarrhalis"
+    },
+    "correct": "C",
+    "explanation": "Pseudomonas aeruginosa is intrinsically resistant to amoxicillin-clavulanate because of its outer membrane permeability, efflux pumps and chromosomal AmpC beta-lactamase, which clavulanate does not inhibit."
+  },
+  {
+    "text": "Which of the following is NOT one of the ESKAPE pathogens?",
+    "options": {
+      "A": "Klebsiella pneumoniae",
+      "B": "Acinetobacter baumannii",
+      "C": "Streptococcus pyogenes",
+      "D": "Enterococcus faecium"
+    },
+    "correct": "C",
+    "explanation": "ESKAPE stands for Enterococcus faecium, Staphylococcus aureus, Klebsiella pneumoniae, Acinetobacter baumannii, Pseudomonas aeruginosa and Enterobacter species. Group A Streptococcus remains universally penicillin susceptible."
+  },
+  {
+    "text": "In the WHO AWaRe classification, amoxicillin-clavulanate belongs to the:",
+    "options": {
+      "A": "Access group",
+      "B": "Watch group",
+      "C": "Reserve group",
+      "D": "Not recommended group"
+    },
+    "correct": "A",
+    "explanation": "Amoxicillin-clavulanate is an Access antibiotic: a first or second choice for common infections with a lower resistance potential than Watch agents such as fluoroquinolones and third-generation cephalosporins."
+  },
+  {
+    "text": "The 2024 UN General Assembly political declaration on AMR set a global target that, by 2030, at least what share of human antibiotic use should come from the WHO Access group?",
+    "options": {
+      "A": "50%",
+      "B": "60%",
+      "C": "70%",
+      "D": "90%"
+    },
+    "correct": "C",
+    "explanation": "The declaration targets at least 70% of human antibiotic consumption from Access group antibiotics by 2030, raising the earlier WHO target of 60%."
+  },
+  {
+    "text": "The most common adverse effect of oral amoxicillin-clavulanate is:",
+    "options": {
+      "A": "Cholestatic jaundice",
+      "B": "Gastrointestinal upset including diarrhoea",
+      "C": "Stevens-Johnson syndrome",
+      "D": "Interstitial nephritis"
+    },
+    "correct": "B",
+    "explanation": "Diarrhoea, nausea and abdominal discomfort are the most frequent complaints and are largely clavulanate related. Taking the dose at the start of a meal reduces GI intolerance."
+  },
+  {
+    "text": "Clavulanate-associated cholestatic hepatitis is more likely in patients who are:",
+    "options": {
+      "A": "Young, female and on a short course",
+      "B": "Older, male and on a prolonged course",
+      "C": "Children under 5 years",
+      "D": "Patients with renal impairment"
+    },
+    "correct": "B",
+    "explanation": "Hepatotoxicity is rare but risk rises with age over 65, male sex and courses longer than about two weeks. Onset can be delayed up to six weeks after stopping the drug."
+  },
+  {
+    "text": "Extended-spectrum beta-lactamase (ESBL) producing Enterobacterales are typically resistant to:",
+    "options": {
+      "A": "Third-generation cephalosporins",
+      "B": "Carbapenems",
+      "C": "Nitrofurantoin",
+      "D": "Fosfomycin"
+    },
+    "correct": "A",
+    "explanation": "ESBLs hydrolyse penicillins and first to third-generation cephalosporins. Carbapenems remain the treatment of choice for serious ESBL infections, which is why their use must be protected."
+  },
+  {
+    "text": "Which class of beta-lactamase is NOT inhibited by clavulanic acid?",
+    "options": {
+      "A": "TEM-1 penicillinase",
+      "B": "Staphylococcal penicillinase",
+      "C": "Chromosomal AmpC (class C)",
+      "D": "SHV-1"
+    },
+    "correct": "C",
+    "explanation": "Clavulanate inhibits most class A enzymes (TEM, SHV, CTX-M, staphylococcal penicillinase) but not class C AmpC enzymes or metallo-beta-lactamases. This explains failures against Enterobacter, Citrobacter and Serratia."
+  },
+  {
+    "text": "A 24-year-old presents with runny nose, sore throat and cough for three days, no fever, normal chest. The most appropriate management is:",
+    "options": {
+      "A": "Amoxicillin for 5 days",
+      "B": "Amoxicillin-clavulanate for 7 days",
+      "C": "Azithromycin for 3 days",
+      "D": "Symptomatic treatment without antibiotics"
+    },
+    "correct": "D",
+    "explanation": "This is a viral upper respiratory tract infection. Antibiotics offer no benefit and add adverse effects and resistance pressure. Safety-netting advice is the correct prescription."
+  },
+  {
+    "text": "In acute otitis media, amoxicillin-clavulanate rather than plain amoxicillin is preferred when the child:",
+    "options": {
+      "A": "Is under 2 years old",
+      "B": "Has received amoxicillin within the past 30 days or has concurrent purulent conjunctivitis",
+      "C": "Has a fever above 38 degrees",
+      "D": "Has bilateral ear involvement"
+    },
+    "correct": "B",
+    "explanation": "Recent amoxicillin exposure, purulent conjunctivitis (suggesting beta-lactamase producing H. influenzae) or recurrent AOM unresponsive to amoxicillin are the accepted indications for adding clavulanate."
+  },
+  {
+    "text": "For acute bacterial rhinosinusitis in adults, the IDSA recommends as first-line empiric therapy:",
+    "options": {
+      "A": "Amoxicillin-clavulanate",
+      "B": "Azithromycin",
+      "C": "Ciprofloxacin",
+      "D": "Cefixime"
+    },
+    "correct": "A",
+    "explanation": "Amoxicillin-clavulanate is recommended over amoxicillin alone because of increasing beta-lactamase production in H. influenzae and M. catarrhalis. Macrolides are not recommended due to high pneumococcal resistance."
+  },
+  {
+    "text": "A teenager with sore throat, fever and lymphadenopathy develops a widespread maculopapular rash a few days after starting amoxicillin. The most likely explanation is:",
+    "options": {
+      "A": "True IgE-mediated penicillin allergy",
+      "B": "Infectious mononucleosis",
+      "C": "Scarlet fever",
+      "D": "Drug-induced lupus"
+    },
+    "correct": "B",
+    "explanation": "Aminopenicillins given during Epstein-Barr virus infection commonly cause a non-allergic rash. It does not indicate penicillin allergy, and the patient should not be labelled as allergic."
+  },
+  {
+    "text": "A patient reports anaphylaxis to penicillin. Which statement is correct?",
+    "options": {
+      "A": "Amoxicillin-clavulanate can be given safely because clavulanate is not a penicillin",
+      "B": "All penicillins including amoxicillin-clavulanate should be avoided",
+      "C": "Only intravenous penicillins need to be avoided",
+      "D": "A test dose of amoxicillin can be given on the ward without precautions"
+    },
+    "correct": "B",
+    "explanation": "A history of anaphylaxis to any penicillin contraindicates all penicillins. Cross-reactivity with cephalosporins is low (about 2%) and depends on side-chain similarity, but allergy testing or specialist advice is advised before use."
+  },
+  {
+    "text": "Beta-lactam antibiotics show time-dependent killing. This means efficacy depends mostly on:",
+    "options": {
+      "A": "The peak serum concentration",
+      "B": "The total daily dose given once a day",
+      "C": "The time the free drug concentration stays above the MIC",
+      "D": "The area under the curve to MIC ratio only"
+    },
+    "correct": "C",
+    "explanation": "For beta-lactams, the percentage of the dosing interval during which free drug exceeds the MIC (fT>MIC) predicts response. Divided doses at correct intervals matter more than large single doses."
+  },
+  {
+    "text": "The preferred oral prophylactic antibiotic after a human or animal bite is:",
+    "options": {
+      "A": "Cephalexin",
+      "B": "Azithromycin",
+      "C": "Amoxicillin-clavulanate",
+      "D": "Metronidazole alone"
+    },
+    "correct": "C",
+    "explanation": "Amoxicillin-clavulanate covers Pasteurella multocida, Eikenella corrodens, streptococci, staphylococci and oral anaerobes. Cephalexin and macrolides miss Pasteurella or Eikenella."
+  },
+  {
+    "text": "Which antibiotic classes carry the highest risk of Clostridioides difficile infection?",
+    "options": {
+      "A": "Nitrofurantoin and fosfomycin",
+      "B": "Clindamycin, fluoroquinolones and cephalosporins",
+      "C": "Doxycycline and minocycline",
+      "D": "Aminoglycosides"
+    },
+    "correct": "B",
+    "explanation": "Clindamycin, fluoroquinolones and broad-spectrum cephalosporins most strongly disrupt colonic flora. Treatment of C. difficile infection is oral vancomycin or fidaxomicin, not metronidazole, in current guidelines."
+  },
+  {
+    "text": "The 'Start Smart, Then Focus' stewardship principle requires a documented review of every antibiotic prescription at:",
+    "options": {
+      "A": "24 hours",
+      "B": "48 to 72 hours",
+      "C": "5 days",
+      "D": "End of the course"
+    },
+    "correct": "B",
+    "explanation": "At 48 to 72 hours, with culture results and clinical response available, the prescriber should stop, switch IV to oral, change, continue or move to outpatient therapy, and document the decision."
+  },
+  {
+    "text": "For amoxicillin-clavulanate, dose adjustment is required when creatinine clearance falls below:",
+    "options": {
+      "A": "80 mL/min",
+      "B": "60 mL/min",
+      "C": "30 mL/min",
+      "D": "No adjustment is ever needed"
+    },
+    "correct": "C",
+    "explanation": "Below 30 mL/min the dosing interval is extended, and the 875/125 mg and extended-release presentations should not be used. Both components are renally cleared."
+  },
+  {
+    "text": "A patient on warfarin is prescribed amoxicillin-clavulanate for a week. What should you anticipate?",
+    "options": {
+      "A": "A fall in INR requiring a higher warfarin dose",
+      "B": "A rise in INR and bleeding risk",
+      "C": "No interaction",
+      "D": "Reduced antibiotic efficacy"
+    },
+    "correct": "B",
+    "explanation": "Antibiotics, including amoxicillin, can potentiate warfarin by reducing vitamin K producing gut flora and through illness itself. Monitor INR during and after the course."
+  },
+  {
+    "text": "Co-prescribing penicillins with methotrexate can cause:",
+    "options": {
+      "A": "Reduced methotrexate efficacy",
+      "B": "Methotrexate toxicity due to reduced renal clearance",
+      "C": "Reduced amoxicillin absorption",
+      "D": "No clinically relevant interaction"
+    },
+    "correct": "B",
+    "explanation": "Penicillins compete with methotrexate for renal tubular secretion, raising methotrexate levels. Patients on high-dose methotrexate need close monitoring or an alternative antibiotic."
+  },
+  {
+    "text": "For an outpatient with community-acquired pneumonia and comorbidities such as diabetes, the ATS/IDSA 2019 guideline recommends:",
+    "options": {
+      "A": "Azithromycin alone",
+      "B": "Amoxicillin-clavulanate or a cephalosporin plus a macrolide or doxycycline",
+      "C": "Ciprofloxacin alone",
+      "D": "Cotrimoxazole"
+    },
+    "correct": "B",
+    "explanation": "Combination therapy with a beta-lactam (amoxicillin-clavulanate or cefpodoxime/cefuroxime) plus a macrolide or doxycycline, or a respiratory fluoroquinolone as an alternative, is recommended for patients with comorbidities."
+  },
+  {
+    "text": "The 'One Health' approach to AMR recognises that resistance spreads between:",
+    "options": {
+      "A": "Hospitals and clinics only",
+      "B": "Humans, animals and the environment",
+      "C": "Developed and developing countries",
+      "D": "Gram-positive and Gram-negative bacteria"
+    },
+    "correct": "B",
+    "explanation": "Antibiotic use in agriculture, aquaculture and veterinary practice, together with pharmaceutical and sewage waste in water, drives resistance that reaches people. AMR cannot be controlled in human medicine alone."
+  },
+  {
+    "text": "For uncomplicated cystitis in a non-pregnant woman, which is NOT a recommended first-line option?",
+    "options": {
+      "A": "Nitrofurantoin",
+      "B": "Fosfomycin single dose",
+      "C": "Amoxicillin-clavulanate",
+      "D": "Trimethoprim-sulfamethoxazole where resistance is low"
+    },
+    "correct": "C",
+    "explanation": "Amoxicillin-clavulanate has lower cure rates in cystitis and more collateral damage to gut flora, so it is reserved for cases guided by culture. Nitrofurantoin, fosfomycin and pivmecillinam are preferred."
+  },
+  {
+    "text": "Group A streptococcal pharyngitis is still treated first-line with penicillin or amoxicillin because:",
+    "options": {
+      "A": "Macrolides are too expensive",
+      "B": "No clinically significant penicillin resistance has ever been documented in Streptococcus pyogenes",
+      "C": "Amoxicillin covers Epstein-Barr virus as well",
+      "D": "Cephalosporins are contraindicated in children"
+    },
+    "correct": "B",
+    "explanation": "S. pyogenes remains uniformly susceptible to penicillin, so narrow-spectrum penicillin V or amoxicillin is the stewardship-appropriate choice. Macrolide resistance, by contrast, is increasing."
+  },
+  {
+    "text": "According to the Lancet GRAM study, bacterial AMR was directly responsible for approximately how many deaths worldwide in 2019?",
+    "options": {
+      "A": "127,000",
+      "B": "500,000",
+      "C": "1.27 million",
+      "D": "10 million"
+    },
+    "correct": "C",
+    "explanation": "An estimated 1.27 million deaths were directly attributable to bacterial AMR in 2019, with 4.95 million deaths associated with it. South Asia carries one of the highest burdens."
+  },
+  {
+    "text": "Which statement about antibiotic course length reflects current evidence?",
+    "options": {
+      "A": "Courses must always be completed for 10 to 14 days to prevent resistance",
+      "B": "Shorter courses, such as 5 days for community-acquired pneumonia, are as effective and reduce resistance",
+      "C": "Stopping antibiotics early never causes harm",
+      "D": "Course length has no relation to resistance"
+    },
+    "correct": "B",
+    "explanation": "Trials across pneumonia, cellulitis, pyelonephritis and intra-abdominal infection show shorter, guideline-defined courses are equally effective. Prolonged exposure selects resistant organisms."
+  }
+]
