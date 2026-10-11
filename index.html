@@ -1,0 +1,960 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Battle of Interns (demo)</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Battle of Interns. Layout: one centred column (560px) for the quiz flow, a wider
+   column (1100px) for admin. Clinical, quiet surfaces; one accent for actions. */
+:root {
+  --bg: #f3f6f9;
+  --surface: #ffffff;
+  --surface-2: #e9eef4;
+  --fg: #132238;
+  --muted: #5d6b80;
+  --line: #d9e0ea;
+  --primary: #0f4c75;
+  --primary-ink: #ffffff;
+  --accent: #1b9aaa;
+  --accent-soft: #dff4f6;
+  --good: #1b7f4b;
+  --good-soft: #e3f4ea;
+  --warn: #b26a00;
+  --warn-soft: #fff1d6;
+  --bad: #b42323;
+  --bad-soft: #fde8e8;
+  --shadow: 0 1px 2px rgba(19, 34, 56, 0.06), 0 8px 24px rgba(19, 34, 56, 0.06);
+  --font-display: "Sora", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1520; --surface: #172131; --surface-2: #1f2b3d; --fg: #e7edf5; --muted: #9aa8bc;
+    --line: #2a3850; --primary: #3f8fc4; --primary-ink: #ffffff; --accent: #4fc3cf; --accent-soft: #15353b;
+    --good: #4ccb86; --good-soft: #163626; --warn: #f0b24a; --warn-soft: #3a2a0d; --bad: #f08080; --bad-soft: #3d1a1a;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1520; --surface: #172131; --surface-2: #1f2b3d; --fg: #e7edf5; --muted: #9aa8bc;
+  --line: #2a3850; --primary: #3f8fc4; --primary-ink: #ffffff; --accent: #4fc3cf; --accent-soft: #15353b;
+  --good: #4ccb86; --good-soft: #163626; --warn: #f0b24a; --warn-soft: #3a2a0d; --bad: #f08080; --bad-soft: #3d1a1a;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.2; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: 1.75rem; font-weight: 700; }
+h2 { font-size: 1.25rem; font-weight: 600; }
+h3 { font-size: 1rem; font-weight: 600; }
+p { margin: 0; }
+a { color: var(--primary); }
+button { font: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.small { font-size: 0.875rem; }
+.eyebrow { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; color: var(--muted); }
+
+/* Shell */
+.topbar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  background: var(--surface); border-bottom: 1px solid var(--line);
+}
+.topbar-in {
+  max-width: 1100px; margin: 0 auto; padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.brand { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 1.05rem; letter-spacing: -0.01em; }
+.brand-sub { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+.topbar .pill { flex-shrink: 0; }
+.wrap { max-width: 560px; margin: 0 auto; padding-block: 24px 48px; padding-inline: 16px; }
+.wrap.wide { max-width: 1100px; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.stack-sm { display: flex; flex-direction: column; gap: 8px; }
+.row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.row.between { justify-content: space-between; }
+.row.end { justify-content: flex-end; }
+.grow { flex: 1 1 auto; min-width: 0; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
+.card.flat { box-shadow: none; }
+.card.tint { background: var(--accent-soft); border-color: transparent; box-shadow: none; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 18px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--fg); font-weight: 600; cursor: pointer;
+  text-decoration: none; min-height: 44px; transition: background .15s, transform .05s;
+}
+.btn:hover { background: var(--surface-2); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-ink); }
+.btn.primary:hover { filter: brightness(1.08); background: var(--primary); }
+.btn.danger { color: var(--bad); border-color: var(--bad); background: transparent; }
+.btn.danger:hover { background: var(--bad-soft); }
+.btn.ghost { border-color: transparent; background: transparent; }
+.btn.ghost:hover { background: var(--surface-2); }
+.btn.sm { padding: 7px 12px; min-height: 34px; font-size: 0.875rem; border-radius: 8px; }
+.btn.block { width: 100%; }
+
+/* Forms */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-weight: 600; font-size: 0.9rem; }
+.field .hint { font-size: 0.8rem; color: var(--muted); }
+.field .err { font-size: 0.8rem; color: var(--bad); }
+.input, select.input, textarea.input {
+  width: 100%; padding: 11px 12px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--fg); font: inherit; min-height: 44px;
+}
+textarea.input { min-height: 88px; resize: vertical; }
+.input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
+.field.invalid .input { border-color: var(--bad); }
+.check { display: flex; gap: 10px; align-items: flex-start; font-size: 0.9rem; }
+.check input { width: 18px; height: 18px; margin-top: 3px; flex-shrink: 0; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 640px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; } .grid-2 { grid-template-columns: 1fr; } .card { padding: 16px; } }
+
+/* Pills and alerts */
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 0.78rem; font-weight: 600; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.pill.good { background: var(--good-soft); color: var(--good); }
+.pill.warn { background: var(--warn-soft); color: var(--warn); }
+.pill.bad { background: var(--bad-soft); color: var(--bad); }
+.pill.accent { background: var(--accent-soft); color: var(--primary); }
+.alert { padding: 12px 14px; border-radius: 10px; font-size: 0.9rem; border: 1px solid transparent; }
+.alert.bad { background: var(--bad-soft); color: var(--bad); }
+.alert.good { background: var(--good-soft); color: var(--good); }
+.alert.warn { background: var(--warn-soft); color: var(--warn); }
+.alert.info { background: var(--accent-soft); color: var(--fg); }
+
+/* Welcome */
+.hero { display: flex; flex-direction: column; gap: 10px; }
+.hero h1 { font-size: 2rem; }
+.rules { display: grid; gap: 10px; }
+.rule { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start; font-size: 0.92rem; }
+.rule-ic { width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft); color: var(--primary); display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; }
+
+/* Quiz */
+.quiz-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.timer { font-family: var(--font-display); font-weight: 700; font-size: 1.5rem; letter-spacing: 0.02em; display: inline-flex; align-items: center; gap: 8px; }
+.timer.warn { color: var(--warn); }
+.timer.bad { color: var(--bad); }
+.timer-dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; animation: blink 1s steps(2) infinite; }
+@keyframes blink { 50% { opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce) { .timer-dot { animation: none; } }
+.progress { height: 6px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.progress > i { display: block; height: 100%; background: var(--accent); width: 0; transition: width .25s; }
+.qtext { font-size: 1.1rem; font-weight: 600; line-height: 1.45; }
+.options { display: grid; gap: 10px; }
+.opt {
+  display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: center; text-align: left;
+  width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--line);
+  background: var(--surface); color: var(--fg); cursor: pointer; font: inherit; line-height: 1.4;
+}
+.opt:hover { border-color: var(--accent); background: var(--accent-soft); }
+.opt .key { width: 32px; height: 32px; border-radius: 8px; background: var(--surface-2); display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; }
+.opt.selected { border-color: var(--primary); background: var(--accent-soft); }
+.opt.selected .key { background: var(--primary); color: var(--primary-ink); }
+.opt.correct { border-color: var(--good); background: var(--good-soft); }
+.opt.correct .key { background: var(--good); color: #fff; }
+.opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.opt.wrong .key { background: var(--bad); color: #fff; }
+.opt[disabled] { cursor: default; }
+.qnav { display: flex; gap: 10px; }
+.qnav .btn { flex: 1; }
+.dots { display: flex; flex-wrap: wrap; gap: 5px; }
+.dot { width: 14px; height: 14px; border-radius: 4px; background: var(--surface-2); border: 1px solid var(--line); }
+.dot.done { background: var(--accent); border-color: var(--accent); }
+.dot.skip { background: var(--warn-soft); border-color: var(--warn); }
+.dot.now { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+/* Result */
+.score-tile { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; }
+.score-big { font-family: var(--font-display); font-size: 3rem; font-weight: 700; line-height: 1; }
+.score-big small { font-size: 1.1rem; color: var(--muted); font-weight: 600; }
+.stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.stat { background: var(--surface-2); border-radius: 10px; padding: 10px 4px; text-align: center; min-width: 0; }
+.stat b { display: block; font-family: var(--font-display); font-size: 1.1rem; }
+.stat span { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.review { display: grid; gap: 12px; }
+.review-item { border-left: 3px solid var(--bad); padding-left: 14px; display: grid; gap: 8px; }
+.review-item.ok { border-left-color: var(--good); }
+.review-item .explain { background: var(--surface-2); border-radius: 10px; padding: 10px 12px; font-size: 0.9rem; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; }
+.tab { padding: 10px 14px; border: 0; background: transparent; color: var(--muted); font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; }
+.tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+/* Leaderboard */
+.board { display: grid; gap: 6px; }
+.board-row { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); }
+.board-row.me { border-color: var(--primary); background: var(--accent-soft); }
+.board-row .rank { font-family: var(--font-display); font-weight: 700; color: var(--muted); }
+.board-row.top .rank { color: var(--warn); }
+.board-row .who { min-width: 0; }
+.board-row .who b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board-row .who span { font-size: 0.78rem; color: var(--muted); }
+.board-row .sc { text-align: right; }
+.board-row .sc b { font-family: var(--font-display); font-size: 1.1rem; display: block; }
+.board-row .sc span { font-size: 0.75rem; color: var(--muted); }
+
+/* Tables (admin) */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); background: var(--surface-2); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.actions { white-space: nowrap; }
+.bar { height: 6px; background: var(--surface-2); border-radius: 999px; overflow: hidden; min-width: 80px; }
+.bar > i { display: block; height: 100%; background: var(--good); }
+.bar.low > i { background: var(--bad); }
+.bar.mid > i { background: var(--warn); }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+.kpi b { font-family: var(--font-display); font-size: 1.6rem; display: block; }
+.kpi span { font-size: 0.78rem; color: var(--muted); }
+
+/* Modal (in-page confirm) */
+.modal-bg { position: fixed; inset: 0; background: rgba(10, 18, 30, 0.55); display: grid; place-items: center; z-index: 50; padding: 16px; }
+.modal { background: var(--surface); border-radius: 16px; padding: 22px; max-width: 420px; width: 100%; box-shadow: var(--shadow); display: grid; gap: 14px; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-size: 0.9rem; z-index: 60; max-width: calc(100% - 32px); }
+
+.footer { text-align: center; font-size: 0.78rem; color: var(--muted); padding-top: 24px; }
+.footer a { color: var(--muted); }
+.demo-badge { font-size: 0.72rem; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: var(--warn-soft); color: var(--warn); letter-spacing: .04em; }
+
+</style>
+</head>
+<body>
+<div id="app"><main class="wrap"><div class="card"><p class="muted">Loading the quiz...</p></div></main></div>
+<script>window.BOI_SEED_QUESTIONS = [{"text": "Antimicrobial resistance (AMR) occurs when:", "options": {"A": "The patient becomes tolerant to an antibiotic after repeated use", "B": "Microorganisms change so that antimicrobials no longer work against them", "C": "The immune system stops responding to an infection", "D": "An antibiotic degrades before reaching the site of infection"}, "correct": "B", "explanation": "AMR is a property of the microbe, not the patient. Bacteria, viruses, fungi and parasites evolve mechanisms that make the drugs designed to kill them ineffective."}, {"text": "World AMR Awareness Week is observed every year during:", "options": {"A": "1 to 7 April", "B": "18 to 24 November", "C": "10 to 16 October", "D": "24 to 30 January"}, "correct": "B", "explanation": "WHO marks World AMR Awareness Week from 18 to 24 November each year to raise awareness and encourage best practices among the public, health workers and policy makers."}, {"text": "The role of clavulanic acid in amoxicillin-clavulanate is to:", "options": {"A": "Extend the half-life of amoxicillin", "B": "Improve the oral absorption of amoxicillin", "C": "Inhibit bacterial beta-lactamase enzymes", "D": "Reduce the renal excretion of amoxicillin"}, "correct": "C", "explanation": "Clavulanic acid has little antibacterial activity of its own. It irreversibly binds and inactivates many beta-lactamases, protecting amoxicillin from hydrolysis."}, {"text": "Amoxicillin kills bacteria by:", "options": {"A": "Inhibiting protein synthesis at the 30S ribosomal subunit", "B": "Inhibiting cell wall synthesis by binding penicillin-binding proteins", "C": "Inhibiting DNA gyrase", "D": "Disrupting the bacterial cell membrane"}, "correct": "B", "explanation": "Like all beta-lactams, amoxicillin binds penicillin-binding proteins and blocks peptidoglycan cross-linking, leading to cell lysis. It is bactericidal."}, {"text": "Which organism is intrinsically resistant to amoxicillin-clavulanate?", "options": {"A": "Streptococcus pneumoniae", "B": "Haemophilus influenzae", "C": "Pseudomonas aeruginosa", "D": "Moraxella catarrhalis"}, "correct": "C", "explanation": "Pseudomonas aeruginosa is intrinsically resistant to amoxicillin-clavulanate because of its outer membrane permeability, efflux pumps and chromosomal AmpC beta-lactamase, which clavulanate does not inhibit."}, {"text": "Which of the following is NOT one of the ESKAPE pathogens?", "options": {"A": "Klebsiella pneumoniae", "B": "Acinetobacter baumannii", "C": "Streptococcus pyogenes", "D": "Enterococcus faecium"}, "correct": "C", "explanation": "ESKAPE stands for Enterococcus faecium, Staphylococcus aureus, Klebsiella pneumoniae, Acinetobacter baumannii, Pseudomonas aeruginosa and Enterobacter species. Group A Streptococcus remains universally penicillin susceptible."}, {"text": "In the WHO AWaRe classification, amoxicillin-clavulanate belongs to the:", "options": {"A": "Access group", "B": "Watch group", "C": "Reserve group", "D": "Not recommended group"}, "correct": "A", "explanation": "Amoxicillin-clavulanate is an Access antibiotic: a first or second choice for common infections with a lower resistance potential than Watch agents such as fluoroquinolones and third-generation cephalosporins."}, {"text": "The 2024 UN General Assembly political declaration on AMR set a global target that, by 2030, at least what share of human antibiotic use should come from the WHO Access group?", "options": {"A": "50%", "B": "60%", "C": "70%", "D": "90%"}, "correct": "C", "explanation": "The declaration targets at least 70% of human antibiotic consumption from Access group antibiotics by 2030, raising the earlier WHO target of 60%."}, {"text": "The most common adverse effect of oral amoxicillin-clavulanate is:", "options": {"A": "Cholestatic jaundice", "B": "Gastrointestinal upset including diarrhoea", "C": "Stevens-Johnson syndrome", "D": "Interstitial nephritis"}, "correct": "B", "explanation": "Diarrhoea, nausea and abdominal discomfort are the most frequent complaints and are largely clavulanate related. Taking the dose at the start of a meal reduces GI intolerance."}, {"text": "Clavulanate-associated cholestatic hepatitis is more likely in patients who are:", "options": {"A": "Young, female and on a short course", "B": "Older, male and on a prolonged course", "C": "Children under 5 years", "D": "Patients with renal impairment"}, "correct": "B", "explanation": "Hepatotoxicity is rare but risk rises with age over 65, male sex and courses longer than about two weeks. Onset can be delayed up to six weeks after stopping the drug."}, {"text": "Extended-spectrum beta-lactamase (ESBL) producing Enterobacterales are typically resistant to:", "options": {"A": "Third-generation cephalosporins", "B": "Carbapenems", "C": "Nitrofurantoin", "D": "Fosfomycin"}, "correct": "A", "explanation": "ESBLs hydrolyse penicillins and first to third-generation cephalosporins. Carbapenems remain the treatment of choice for serious ESBL infections, which is why their use must be protected."}, {"text": "Which class of beta-lactamase is NOT inhibited by clavulanic acid?", "options": {"A": "TEM-1 penicillinase", "B": "Staphylococcal penicillinase", "C": "Chromosomal AmpC (class C)", "D": "SHV-1"}, "correct": "C", "explanation": "Clavulanate inhibits most class A enzymes (TEM, SHV, CTX-M, staphylococcal penicillinase) but not class C AmpC enzymes or metallo-beta-lactamases. This explains failures against Enterobacter, Citrobacter and Serratia."}, {"text": "A 24-year-old presents with runny nose, sore throat and cough for three days, no fever, normal chest. The most appropriate management is:", "options": {"A": "Amoxicillin for 5 days", "B": "Amoxicillin-clavulanate for 7 days", "C": "Azithromycin for 3 days", "D": "Symptomatic treatment without antibiotics"}, "correct": "D", "explanation": "This is a viral upper respiratory tract infection. Antibiotics offer no benefit and add adverse effects and resistance pressure. Safety-netting advice is the correct prescription."}, {"text": "In acute otitis media, amoxicillin-clavulanate rather than plain amoxicillin is preferred when the child:", "options": {"A": "Is under 2 years old", "B": "Has received amoxicillin within the past 30 days or has concurrent purulent conjunctivitis", "C": "Has a fever above 38 degrees", "D": "Has bilateral ear involvement"}, "correct": "B", "explanation": "Recent amoxicillin exposure, purulent conjunctivitis (suggesting beta-lactamase producing H. influenzae) or recurrent AOM unresponsive to amoxicillin are the accepted indications for adding clavulanate."}, {"text": "For acute bacterial rhinosinusitis in adults, the IDSA recommends as first-line empiric therapy:", "options": {"A": "Amoxicillin-clavulanate", "B": "Azithromycin", "C": "Ciprofloxacin", "D": "Cefixime"}, "correct": "A", "explanation": "Amoxicillin-clavulanate is recommended over amoxicillin alone because of increasing beta-lactamase production in H. influenzae and M. catarrhalis. Macrolides are not recommended due to high pneumococcal resistance."}, {"text": "A teenager with sore throat, fever and lymphadenopathy develops a widespread maculopapular rash a few days after starting amoxicillin. The most likely explanation is:", "options": {"A": "True IgE-mediated penicillin allergy", "B": "Infectious mononucleosis", "C": "Scarlet fever", "D": "Drug-induced lupus"}, "correct": "B", "explanation": "Aminopenicillins given during Epstein-Barr virus infection commonly cause a non-allergic rash. It does not indicate penicillin allergy, and the patient should not be labelled as allergic."}, {"text": "A patient reports anaphylaxis to penicillin. Which statement is correct?", "options": {"A": "Amoxicillin-clavulanate can be given safely because clavulanate is not a penicillin", "B": "All penicillins including amoxicillin-clavulanate should be avoided", "C": "Only intravenous penicillins need to be avoided", "D": "A test dose of amoxicillin can be given on the ward without precautions"}, "correct": "B", "explanation": "A history of anaphylaxis to any penicillin contraindicates all penicillins. Cross-reactivity with cephalosporins is low (about 2%) and depends on side-chain similarity, but allergy testing or specialist advice is advised before use."}, {"text": "Beta-lactam antibiotics show time-dependent killing. This means efficacy depends mostly on:", "options": {"A": "The peak serum concentration", "B": "The total daily dose given once a day", "C": "The time the free drug concentration stays above the MIC", "D": "The area under the curve to MIC ratio only"}, "correct": "C", "explanation": "For beta-lactams, the percentage of the dosing interval during which free drug exceeds the MIC (fT>MIC) predicts response. Divided doses at correct intervals matter more than large single doses."}, {"text": "The preferred oral prophylactic antibiotic after a human or animal bite is:", "options": {"A": "Cephalexin", "B": "Azithromycin", "C": "Amoxicillin-clavulanate", "D": "Metronidazole alone"}, "correct": "C", "explanation": "Amoxicillin-clavulanate covers Pasteurella multocida, Eikenella corrodens, streptococci, staphylococci and oral anaerobes. Cephalexin and macrolides miss Pasteurella or Eikenella."}, {"text": "Which antibiotic classes carry the highest risk of Clostridioides difficile infection?", "options": {"A": "Nitrofurantoin and fosfomycin", "B": "Clindamycin, fluoroquinolones and cephalosporins", "C": "Doxycycline and minocycline", "D": "Aminoglycosides"}, "correct": "B", "explanation": "Clindamycin, fluoroquinolones and broad-spectrum cephalosporins most strongly disrupt colonic flora. Treatment of C. difficile infection is oral vancomycin or fidaxomicin, not metronidazole, in current guidelines."}, {"text": "The 'Start Smart, Then Focus' stewardship principle requires a documented review of every antibiotic prescription at:", "options": {"A": "24 hours", "B": "48 to 72 hours", "C": "5 days", "D": "End of the course"}, "correct": "B", "explanation": "At 48 to 72 hours, with culture results and clinical response available, the prescriber should stop, switch IV to oral, change, continue or move to outpatient therapy, and document the decision."}, {"text": "For amoxicillin-clavulanate, dose adjustment is required when creatinine clearance falls below:", "options": {"A": "80 mL/min", "B": "60 mL/min", "C": "30 mL/min", "D": "No adjustment is ever needed"}, "correct": "C", "explanation": "Below 30 mL/min the dosing interval is extended, and the 875/125 mg and extended-release presentations should not be used. Both components are renally cleared."}, {"text": "A patient on warfarin is prescribed amoxicillin-clavulanate for a week. What should you anticipate?", "options": {"A": "A fall in INR requiring a higher warfarin dose", "B": "A rise in INR and bleeding risk", "C": "No interaction", "D": "Reduced antibiotic efficacy"}, "correct": "B", "explanation": "Antibiotics, including amoxicillin, can potentiate warfarin by reducing vitamin K producing gut flora and through illness itself. Monitor INR during and after the course."}, {"text": "Co-prescribing penicillins with methotrexate can cause:", "options": {"A": "Reduced methotrexate efficacy", "B": "Methotrexate toxicity due to reduced renal clearance", "C": "Reduced amoxicillin absorption", "D": "No clinically relevant interaction"}, "correct": "B", "explanation": "Penicillins compete with methotrexate for renal tubular secretion, raising methotrexate levels. Patients on high-dose methotrexate need close monitoring or an alternative antibiotic."}, {"text": "For an outpatient with community-acquired pneumonia and comorbidities such as diabetes, the ATS/IDSA 2019 guideline recommends:", "options": {"A": "Azithromycin alone", "B": "Amoxicillin-clavulanate or a cephalosporin plus a macrolide or doxycycline", "C": "Ciprofloxacin alone", "D": "Cotrimoxazole"}, "correct": "B", "explanation": "Combination therapy with a beta-lactam (amoxicillin-clavulanate or cefpodoxime/cefuroxime) plus a macrolide or doxycycline, or a respiratory fluoroquinolone as an alternative, is recommended for patients with comorbidities."}, {"text": "The 'One Health' approach to AMR recognises that resistance spreads between:", "options": {"A": "Hospitals and clinics only", "B": "Humans, animals and the environment", "C": "Developed and developing countries", "D": "Gram-positive and Gram-negative bacteria"}, "correct": "B", "explanation": "Antibiotic use in agriculture, aquaculture and veterinary practice, together with pharmaceutical and sewage waste in water, drives resistance that reaches people. AMR cannot be controlled in human medicine alone."}, {"text": "For uncomplicated cystitis in a non-pregnant woman, which is NOT a recommended first-line option?", "options": {"A": "Nitrofurantoin", "B": "Fosfomycin single dose", "C": "Amoxicillin-clavulanate", "D": "Trimethoprim-sulfamethoxazole where resistance is low"}, "correct": "C", "explanation": "Amoxicillin-clavulanate has lower cure rates in cystitis and more collateral damage to gut flora, so it is reserved for cases guided by culture. Nitrofurantoin, fosfomycin and pivmecillinam are preferred."}, {"text": "Group A streptococcal pharyngitis is still treated first-line with penicillin or amoxicillin because:", "options": {"A": "Macrolides are too expensive", "B": "No clinically significant penicillin resistance has ever been documented in Streptococcus pyogenes", "C": "Amoxicillin covers Epstein-Barr virus as well", "D": "Cephalosporins are contraindicated in children"}, "correct": "B", "explanation": "S. pyogenes remains uniformly susceptible to penicillin, so narrow-spectrum penicillin V or amoxicillin is the stewardship-appropriate choice. Macrolide resistance, by contrast, is increasing."}, {"text": "According to the Lancet GRAM study, bacterial AMR was directly responsible for approximately how many deaths worldwide in 2019?", "options": {"A": "127,000", "B": "500,000", "C": "1.27 million", "D": "10 million"}, "correct": "C", "explanation": "An estimated 1.27 million deaths were directly attributable to bacterial AMR in 2019, with 4.95 million deaths associated with it. South Asia carries one of the highest burdens."}, {"text": "Which statement about antibiotic course length reflects current evidence?", "options": {"A": "Courses must always be completed for 10 to 14 days to prevent resistance", "B": "Shorter courses, such as 5 days for community-acquired pneumonia, are as effective and reduce resistance", "C": "Stopping antibiotics early never causes harm", "D": "Course length has no relation to resistance"}, "correct": "B", "explanation": "Trials across pneumonia, cellulitis, pyelonephritis and intra-abdominal infection show shorter, guideline-defined courses are equally effective. Prolonged exposure selects resistant organisms."}];</script>
+<script>
+/* Demo adapter: same functions as api-remote.js, but everything is kept in this browser's
+   localStorage. Used only for the standalone demo page. Nothing is sent anywhere. */
+window.BOI_API = (function () {
+  "use strict";
+  const KEY = "boi_demo_v2";
+  const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+  const delay = (v) => new Promise((r) => setTimeout(() => r(v), 120));
+  const fail = (m) => { throw new Error(m); };
+  const norm = (s) => String(s || "").trim();
+  const normBmdc = (s) => norm(s).toUpperCase().replace(/\s+/g, "").replace(/^([A-Z]+)-?(\d+)$/, "$1-$2");
+  const normPhone = (s) => norm(s).replace(/[\s-]/g, "").replace(/^\+?88/, "");
+
+  function seed() {
+    const questions = (window.BOI_SEED_QUESTIONS || []).map((q, i) => ({ id: "q" + (i + 1), text: q.text, options: q.options, correct: q.correct, explanation: q.explanation, active: true }));
+    const db = {
+      settings: { campaignName: "Battle of Interns", sponsor: "Moxaclav", durationSec: 600, questionCount: 30, shuffle: true, leaderboardPublic: true, manualClosed: false, openAt: null, closeAt: null },
+      adminPassword: "admin123", questions, participants: [], attempts: [],
+    };
+    // A few sample finishers so the ranking board is not empty in the demo. Admin > Settings > Clear all participants removes them.
+    const samples = [["Dr. Tanvir Ahmed", "Dhaka Medical College Hospital", 27, 412], ["Dr. Nusrat Jahan", "Sir Salimullah Medical College", 26, 388], ["Dr. Rafiul Islam", "Chittagong Medical College", 26, 455], ["Dr. Farhana Haque", "Mymensingh Medical College", 24, 501], ["Dr. Sabbir Hossain", "Rajshahi Medical College", 22, 530], ["Dr. Mehzabin Chowdhury", "Sylhet MAG Osmani Medical College", 19, 572]];
+    samples.forEach(([name, inst, score, secs], i) => {
+      const pid = "sample" + i, now = Date.now() - (i + 1) * 3600 * 1000;
+      db.participants.push({ id: pid, token: "t_" + pid, name, email: "sample" + (i + 1) + "@example.com", bmdc: "A-" + (100001 + i), phone: "017000000" + (10 + i), institution: inst + " (sample)", registeredAt: now });
+      const order = questions.map((q) => q.id);
+      const answers = {}; let wrongLeft = order.length - score;
+      order.forEach((qid) => { const q = questions.find((x) => x.id === qid); if (wrongLeft > 0 && Math.random() < 0.35) { answers[qid] = ["A", "B", "C", "D"].find((k) => k !== q.correct); wrongLeft--; } else answers[qid] = q.correct; });
+      // adjust if randomness left too few wrongs
+      for (const qid of order) { if (wrongLeft <= 0) break; const q = questions.find((x) => x.id === qid); if (answers[qid] === q.correct) { answers[qid] = ["A", "B", "C", "D"].find((k) => k !== q.correct); wrongLeft--; } }
+      const a = { id: "a_" + pid, participantId: pid, startedAt: now, endsAt: now + 600000, order, answers, tabSwitches: i === 4 ? 5 : 0, status: "completed", submittedAt: now + secs * 1000 };
+      Object.assign(a, scoreAttempt(db, a));
+      db.attempts.push(a);
+    });
+    return db;
+  }
+  function load() { try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.questions) return s; } catch (e) {} const db = seed(); save(db); return db; }
+  function save(db) { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {} }
+
+  function status(s) {
+    const now = Date.now();
+    if (s.manualClosed) return "closed";
+    if (s.openAt && now < s.openAt) return "not_started";
+    if (s.closeAt && now >= s.closeAt) return "closed";
+    return "open";
+  }
+  function publicSettings(db) { const s = db.settings; return { campaignName: s.campaignName, sponsor: s.sponsor, durationSec: s.durationSec, questionCount: Math.min(s.questionCount, db.questions.filter((q) => q.active).length) || s.questionCount, leaderboardPublic: s.leaderboardPublic, status: status(s), demo: true }; }
+  function scoreAttempt(db, a) {
+    let correct = 0, wrong = 0, skipped = 0;
+    for (const qid of a.order) { const q = db.questions.find((x) => x.id === qid); const ans = a.answers[qid]; if (!ans) skipped++; else if (q && ans === q.correct) correct++; else wrong++; }
+    const timeTakenSec = Math.min(Math.round((a.submittedAt - a.startedAt) / 1000), Math.round((a.endsAt - a.startedAt) / 1000));
+    return { score: correct, correct, wrong, skipped, total: a.order.length, timeTakenSec };
+  }
+  function ranked(db) {
+    return db.attempts.filter((a) => a.status === "completed").sort((x, y) => y.score - x.score || x.timeTakenSec - y.timeTakenSec || x.submittedAt - y.submittedAt)
+      .map((a, i) => ({ a, p: db.participants.find((p) => p.id === a.participantId), rank: i + 1 }));
+  }
+  function result(db, a, p) {
+    const r = ranked(db).find((x) => x.a.id === a.id);
+    const review = a.order.map((qid, i) => { const q = db.questions.find((x) => x.id === qid) || { text: "(question removed)", options: {}, correct: "", explanation: "" }; const ya = a.answers[qid] || null; return { number: i + 1, id: qid, text: q.text, options: ["A", "B", "C", "D"].filter((k) => q.options[k]).map((k) => ({ key: k, text: q.options[k] })), correct: q.correct, yourAnswer: ya, isCorrect: ya === q.correct, explanation: q.explanation }; });
+    return { completed: true, name: p.name, score: a.score, total: a.total, correct: a.correct, wrong: a.wrong, skipped: a.skipped, timeTakenSec: a.timeTakenSec, rank: r ? r.rank : null, totalParticipants: db.attempts.filter((x) => x.status === "completed").length, review };
+  }
+  function pByToken(db, token) { const p = db.participants.find((x) => x.token === token); if (!p) fail("Registration not found. Please register again."); return p; }
+  function adminCheck(db, token) { if (!token || token !== db._adminToken) fail("Unauthorised. Please sign in."); }
+  const csvCell = (v) => { const s = String(v ?? ""); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const csv = (rows) => rows.map((r) => r.map(csvCell).join(",")).join("\r\n");
+
+  return {
+    async getSettings() { return delay(publicSettings(load())); },
+
+    async register(d) {
+      const db = load();
+      if (status(db.settings) !== "open") fail("Registration is closed.");
+      const bmdc = normBmdc(d.bmdc), phone = normPhone(d.phone), email = norm(d.email).toLowerCase();
+      const existing = db.participants.find((p) => p.bmdc === bmdc || p.email === email || p.phone === phone);
+      if (existing) {
+        const a = db.attempts.find((x) => x.participantId === existing.id);
+        if (a && a.status === "completed") fail("This BMDC number, phone or email has already completed the quiz. Only one attempt is allowed.");
+        if (existing.bmdc === bmdc && existing.phone === phone) return delay({ token: existing.token, resumed: true });
+        fail("These details are already registered. Use the same device you started on, or contact the organisers.");
+      }
+      const p = { id: uid(), token: "t_" + uid(), name: norm(d.name), email, bmdc, phone, institution: norm(d.institution), registeredAt: Date.now() };
+      db.participants.push(p); save(db);
+      return delay({ token: p.token, resumed: false });
+    },
+
+    async startAttempt(token) {
+      const db = load(); const p = pByToken(db, token);
+      let a = db.attempts.find((x) => x.participantId === p.id);
+      if (a && a.status === "completed") fail("You have already completed the quiz.");
+      if (!a) {
+        const active = db.questions.filter((q) => q.active);
+        if (!active.length) fail("No questions are available yet.");
+        let order = active.map((q) => q.id);
+        if (db.settings.shuffle) order.sort(() => Math.random() - 0.5);
+        order = order.slice(0, db.settings.questionCount);
+        const now = Date.now();
+        a = { id: uid(), participantId: p.id, startedAt: now, endsAt: now + db.settings.durationSec * 1000, order, answers: {}, tabSwitches: 0, status: "in_progress" };
+        db.attempts.push(a); save(db);
+      }
+      const questions = a.order.map((qid) => { const q = db.questions.find((x) => x.id === qid); return { id: qid, text: q ? q.text : "(removed)", options: q ? ["A", "B", "C", "D"].filter((k) => q.options[k]).map((k) => ({ key: k, text: q.options[k] })) : [] }; });
+      return delay({ attemptId: a.id, startedAt: a.startedAt, endsAt: a.endsAt, durationSec: db.settings.durationSec, questions, answers: a.answers, tabSwitches: a.tabSwitches, serverNow: Date.now() });
+    },
+
+    async saveProgress(token, { answers, tabSwitches }) {
+      const db = load(); const p = pByToken(db, token); const a = db.attempts.find((x) => x.participantId === p.id && x.status === "in_progress");
+      if (!a) return { ok: true };
+      a.answers = Object.assign({}, a.answers, answers || {}); a.tabSwitches = Math.max(a.tabSwitches, tabSwitches || 0); save(db); return { ok: true };
+    },
+
+    async submitAttempt(token, { answers, tabSwitches }) {
+      const db = load(); const p = pByToken(db, token); const a = db.attempts.find((x) => x.participantId === p.id);
+      if (!a) fail("No attempt found.");
+      if (a.status !== "completed") {
+        a.answers = Object.assign({}, a.answers, answers || {}); a.tabSwitches = Math.max(a.tabSwitches, tabSwitches || 0);
+        a.submittedAt = Date.now(); a.status = "completed"; Object.assign(a, scoreAttempt(db, a)); save(db);
+      }
+      return delay(result(db, a, p));
+    },
+
+    async getResult(token) {
+      const db = load(); const p = pByToken(db, token); const a = db.attempts.find((x) => x.participantId === p.id);
+      if (!a || a.status !== "completed") return { completed: false };
+      return delay(result(db, a, p));
+    },
+
+    async getLeaderboard(token) {
+      const db = load();
+      if (!db.settings.leaderboardPublic && !db._adminToken) fail("The ranking board is not public.");
+      const me = token ? db.participants.find((p) => p.token === token) : null;
+      const all = ranked(db);
+      const rows = all.slice(0, 50).map((x) => ({ rank: x.rank, name: x.p.name, institution: x.p.institution, score: x.a.score, total: x.a.total, timeTakenSec: x.a.timeTakenSec, isMe: !!me && x.p.id === me.id }));
+      const mine = me ? all.find((x) => x.p.id === me.id) : null;
+      return delay({ rows, totalParticipants: all.length, me: mine ? { rank: mine.rank, name: me.name, score: mine.a.score, total: mine.a.total, timeTakenSec: mine.a.timeTakenSec } : null });
+    },
+
+    /* ---- admin ---- */
+    async adminLogin(password) { const db = load(); if (password !== db.adminPassword) fail("Wrong password."); db._adminToken = "adm_" + uid(); save(db); return delay({ adminToken: db._adminToken }); },
+    async adminLogout() { const db = load(); delete db._adminToken; save(db); },
+    async adminStats(t) {
+      const db = load(); adminCheck(db, t);
+      const done = db.attempts.filter((a) => a.status === "completed");
+      const qs = db.questions.map((q) => { let attempts = 0, correct = 0; done.forEach((a) => { if (a.order.includes(q.id)) { attempts++; if (a.answers[q.id] === q.correct) correct++; } }); return { id: q.id, text: q.text, attempts, correct }; });
+      return delay({ participants: db.participants.length, completed: done.length, inProgress: db.attempts.length - done.length, total: Math.min(db.settings.questionCount, db.questions.filter((q) => q.active).length), avgScore: done.length ? done.reduce((s, a) => s + a.score, 0) / done.length : 0, avgTimeSec: done.length ? done.reduce((s, a) => s + a.timeTakenSec, 0) / done.length : 0, questionStats: qs });
+    },
+    async adminQuestions(t) { const db = load(); adminCheck(db, t); return delay(db.questions.map((q) => ({ ...q }))); },
+    async adminSaveQuestion(t, q) {
+      const db = load(); adminCheck(db, t);
+      if (!q.text || !["A", "B", "C", "D"].every((k) => q.options[k]) || !/^[ABCD]$/.test(q.correct)) fail("Fill in the question, all four options and the correct option.");
+      if (q.id) { const i = db.questions.findIndex((x) => x.id === q.id); if (i < 0) fail("Question not found."); db.questions[i] = { ...db.questions[i], text: q.text, options: q.options, correct: q.correct, explanation: q.explanation || "", active: !!q.active }; }
+      else db.questions.push({ id: "q_" + uid(), text: q.text, options: q.options, correct: q.correct, explanation: q.explanation || "", active: q.active !== false });
+      save(db); return { ok: true };
+    },
+    async adminDeleteQuestion(t, id) { const db = load(); adminCheck(db, t); db.questions = db.questions.filter((q) => q.id !== id); save(db); return { ok: true }; },
+    async adminImportQuestions(t, list, replace) {
+      const db = load(); adminCheck(db, t);
+      if (replace) db.questions = [];
+      list.forEach((q) => db.questions.push({ id: "q_" + uid(), text: q.text, options: q.options, correct: q.correct, explanation: q.explanation || "", active: true }));
+      save(db); return { count: list.length };
+    },
+    async adminParticipants(t, { q } = {}) {
+      const db = load(); adminCheck(db, t); const s = (q || "").toLowerCase();
+      return delay(db.participants.filter((p) => !s || [p.name, p.bmdc, p.phone, p.email, p.institution].some((v) => String(v || "").toLowerCase().includes(s)))
+        .sort((a, b) => b.registeredAt - a.registeredAt)
+        .map((p) => { const a = db.attempts.find((x) => x.participantId === p.id); return { id: p.id, name: p.name, email: p.email, bmdc: p.bmdc, phone: p.phone, institution: p.institution, registeredAt: p.registeredAt, status: a ? a.status : "registered", score: a && a.score, total: a && a.total, timeTakenSec: a && a.timeTakenSec, tabSwitches: a ? a.tabSwitches : 0, submittedAt: a && a.submittedAt }; }));
+    },
+    async adminParticipantAnswers(t, id) {
+      const db = load(); adminCheck(db, t); const a = db.attempts.find((x) => x.participantId === id); if (!a) fail("No attempt.");
+      return delay(a.order.map((qid) => { const q = db.questions.find((x) => x.id === qid) || { text: "(removed)", correct: "" }; return { text: q.text, answer: a.answers[qid] || null, correct: q.correct, isCorrect: a.answers[qid] === q.correct }; }));
+    },
+    async adminDeleteParticipant(t, id) { const db = load(); adminCheck(db, t); db.participants = db.participants.filter((p) => p.id !== id); db.attempts = db.attempts.filter((a) => a.participantId !== id); save(db); return { ok: true }; },
+    async adminExport(t, kind) {
+      const db = load(); adminCheck(db, t); const stamp = new Date().toISOString().slice(0, 10);
+      if (kind === "answers") {
+        const rows = [["name", "bmdc", "question_no", "question", "answer", "correct_option", "is_correct"]];
+        db.attempts.filter((a) => a.status === "completed").forEach((a) => { const p = db.participants.find((x) => x.id === a.participantId); a.order.forEach((qid, i) => { const q = db.questions.find((x) => x.id === qid) || { text: "", correct: "" }; rows.push([p.name, p.bmdc, i + 1, q.text, a.answers[qid] || "", q.correct, a.answers[qid] === q.correct ? 1 : 0]); }); });
+        return { filename: `battle-of-interns-answers-${stamp}.csv`, csv: csv(rows) };
+      }
+      const rows = [["rank", "name", "bmdc", "phone", "email", "institution", "registered_at", "status", "score", "total", "time_taken_sec", "tab_switches", "submitted_at"]];
+      const rk = ranked(db);
+      db.participants.forEach((p) => { const a = db.attempts.find((x) => x.participantId === p.id); const r = rk.find((x) => x.p.id === p.id); rows.push([r ? r.rank : "", p.name, p.bmdc, p.phone, p.email, p.institution, new Date(p.registeredAt).toISOString(), a ? a.status : "registered", a && a.score != null ? a.score : "", a && a.total ? a.total : "", a && a.timeTakenSec != null ? a.timeTakenSec : "", a ? a.tabSwitches : 0, a && a.submittedAt ? new Date(a.submittedAt).toISOString() : ""]); });
+      return { filename: `battle-of-interns-participants-${stamp}.csv`, csv: csv(rows) };
+    },
+    async adminSettings(t) { const db = load(); adminCheck(db, t); return delay({ ...db.settings }); },
+    async adminSaveSettings(t, s) { const db = load(); adminCheck(db, t); db.settings = { ...db.settings, ...s }; save(db); return { ok: true }; },
+    async adminChangePassword(t, oldPw, newPw) { const db = load(); adminCheck(db, t); if (oldPw !== db.adminPassword) fail("Current password is wrong."); if ((newPw || "").length < 8) fail("New password must be at least 8 characters."); db.adminPassword = newPw; save(db); return { ok: true }; },
+    async adminReset(t) { const db = load(); adminCheck(db, t); db.participants = []; db.attempts = []; save(db); return { ok: true }; },
+  };
+})();
+
+</script>
+<script>
+/* Battle of Interns. Single-page app: quiz flow + admin panel.
+   Talks to window.BOI_API (api-remote.js for the hosted site, api-local.js for the demo). */
+(function () {
+  "use strict";
+  const API = window.BOI_API;
+  const $app = document.getElementById("app");
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const pad = (n) => String(n).padStart(2, "0");
+  const mmss = (sec) => `${pad(Math.floor(sec / 60))}:${pad(sec % 60)}`;
+  const fmtDate = (ms) => (ms ? new Date(ms).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" }) : "");
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+    del(k) { try { localStorage.removeItem(k); } catch (e) {} },
+  };
+
+  let settings = { campaignName: "Battle of Interns", sponsor: "Moxaclav", durationSec: 600, questionCount: 30, leaderboardPublic: true, status: "open" };
+  let toastTimer = null;
+
+  function toast(msg) {
+    let t = document.querySelector(".toast");
+    if (!t) { t = document.createElement("div"); t.className = "toast"; document.body.appendChild(t); }
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2600);
+  }
+  function confirmBox({ title, body, okText = "Confirm", danger = false }) {
+    return new Promise((resolve) => {
+      const bg = document.createElement("div"); bg.className = "modal-bg";
+      bg.innerHTML = `<div class="modal" role="dialog" aria-modal="true"><h2>${esc(title)}</h2><p class="muted">${esc(body)}</p>
+        <div class="row end"><button class="btn" data-x="no">Cancel</button><button class="btn ${danger ? "danger" : "primary"}" data-x="yes">${esc(okText)}</button></div></div>`;
+      bg.addEventListener("click", (e) => { const x = e.target.getAttribute("data-x"); if (x) { bg.remove(); resolve(x === "yes"); } });
+      document.body.appendChild(bg);
+    });
+  }
+  function shell(inner, { wide = false, right = "" } = {}) {
+    $app.innerHTML = `
+      <header class="topbar"><div class="topbar-in">
+        <div class="brand"><span class="brand-name">${esc(settings.campaignName)}</span><span class="brand-sub">${esc(settings.sponsor)} &middot; World AMR Awareness Week</span></div>
+        ${right}
+      </div></header>
+      <main class="wrap ${wide ? "wide" : ""}">${inner}</main>
+      <div class="footer">Square Pharmaceuticals PLC &middot; Digital Marketing, Business Development ${settings.demo ? '&middot; <span class="demo-badge">DEMO</span>' : ""} &middot; <a href="#admin">Admin</a></div>`;
+  }
+
+  /* ---------------- Routing ---------------- */
+  async function route() {
+    try { settings = await API.getSettings(); } catch (e) { /* keep defaults */ }
+    const h = location.hash.replace("#", "");
+    if (h === "admin") return Admin.mount();
+    if (h === "board") return Board.mount();
+    return Quiz.boot();
+  }
+  window.addEventListener("hashchange", route);
+
+  /* ---------------- Participant flow ---------------- */
+  const Quiz = {
+    token: null, attempt: null, answers: {}, queue: [], seen: new Set(), tabSwitches: 0, timerId: null, saveTimer: null, submitting: false,
+
+    async boot() {
+      Quiz.stopTimer();
+      Quiz.token = store.get("boi_token");
+      if (Quiz.token) {
+        try {
+          const r = await API.getResult(Quiz.token);
+          if (r && r.completed) return Quiz.showResult(r);
+          return Quiz.start(true);
+        } catch (e) { store.del("boi_token"); Quiz.token = null; }
+      }
+      Quiz.welcome();
+    },
+
+    welcome(err) {
+      const closed = settings.status !== "open";
+      shell(`
+        <div class="stack">
+          <div class="hero">
+            <span class="eyebrow">Online quiz for intern doctors</span>
+            <h1>${esc(settings.campaignName)}</h1>
+            <p class="muted">Test your antimicrobial judgement. ${settings.questionCount} questions, ${Math.round(settings.durationSec / 60)} minutes, one attempt per doctor.</p>
+          </div>
+          <div class="card stack">
+            <div class="rules">
+              <div class="rule"><div class="rule-ic">${settings.questionCount}</div><div><b>MCQ, one at a time</b><br><span class="muted small">Pick one option and press Next. You cannot go back.</span></div></div>
+              <div class="rule"><div class="rule-ic">${Math.round(settings.durationSec / 60)}m</div><div><b>Timed</b><br><span class="muted small">The clock starts when you press Start and runs even if you leave the page.</span></div></div>
+              <div class="rule"><div class="rule-ic">&#8631;</div><div><b>Skip and return</b><br><span class="muted small">Skipped questions come back after you reach the end.</span></div></div>
+              <div class="rule"><div class="rule-ic">&#10003;</div><div><b>Learn after</b><br><span class="muted small">Explanations for every wrong answer appear when you finish, with your rank.</span></div></div>
+            </div>
+          </div>
+          ${closed ? `<div class="alert warn">${settings.status === "not_started" ? "The quiz has not opened yet." : "Registration for this quiz is closed."} ${settings.leaderboardPublic ? '<a href="#board">See the ranking board</a>.' : ""}</div>` : `
+          <form class="card stack" id="regForm" novalidate>
+            <h2>Register to start</h2>
+            ${err ? `<div class="alert bad">${esc(err)}</div>` : ""}
+            <div class="field"><label for="f_name">Full name</label><input class="input" id="f_name" name="name" autocomplete="name" placeholder="Dr. Full Name" required></div>
+            <div class="field"><label for="f_bmdc">BMDC registration number</label><input class="input" id="f_bmdc" name="bmdc" placeholder="A-123456" autocomplete="off" required><span class="hint">As printed on your BMDC certificate. One attempt per registration number.</span></div>
+            <div class="grid-2">
+              <div class="field"><label for="f_phone">Mobile number</label><input class="input" id="f_phone" name="phone" inputmode="tel" placeholder="01XXXXXXXXX" required></div>
+              <div class="field"><label for="f_email">Email</label><input class="input" id="f_email" name="email" type="email" inputmode="email" placeholder="you@example.com" required></div>
+            </div>
+            <div class="field"><label for="f_inst">Medical college / hospital <span class="muted">(optional)</span></label><input class="input" id="f_inst" name="institution" placeholder="e.g. Dhaka Medical College Hospital"></div>
+            <label class="check"><input type="checkbox" id="f_consent" name="consent" required><span>I confirm I am an intern doctor and agree that my name and score may appear on the ranking board and that Square Pharmaceuticals may contact me about this campaign.</span></label>
+            <button class="btn primary block" type="submit" id="btnStart">Start the quiz</button>
+            ${settings.leaderboardPublic ? `<a class="btn ghost block" href="#board">View ranking board</a>` : ""}
+          </form>`}
+        </div>`);
+      const form = document.getElementById("regForm");
+      if (!form) return;
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const d = Object.fromEntries(new FormData(form).entries());
+        d.consent = form.consent.checked;
+        const problems = Quiz.validate(d);
+        form.querySelectorAll(".field").forEach((f) => { f.classList.remove("invalid"); const er = f.querySelector(".err"); if (er) er.remove(); });
+        if (Object.keys(problems).length) {
+          for (const [k, msg] of Object.entries(problems)) {
+            const inp = form.querySelector(`[name="${k}"]`); const f = inp && inp.closest(".field");
+            if (f) { f.classList.add("invalid"); f.insertAdjacentHTML("beforeend", `<span class="err">${esc(msg)}</span>`); }
+            else toast(msg);
+          }
+          return;
+        }
+        const btn = document.getElementById("btnStart"); btn.disabled = true; btn.textContent = "Registering...";
+        try {
+          const r = await API.register(d);
+          Quiz.token = r.token; store.set("boi_token", r.token);
+          Quiz.start(false);
+        } catch (ex) { Quiz.welcome(ex.message || "Could not register."); }
+      });
+    },
+
+    validate(d) {
+      const p = {};
+      if (!d.name || d.name.trim().length < 3) p.name = "Enter your full name.";
+      if (!/^[A-Z]{1,2}\d{3,7}$/.test((d.bmdc || "").toUpperCase().replace(/[\s-]/g, ""))) p.bmdc = "Enter a valid BMDC number, e.g. A-123456.";
+      if (!/^(\+?88)?01[3-9]\d{8}$/.test((d.phone || "").replace(/[\s-]/g, ""))) p.phone = "Enter an 11-digit Bangladeshi mobile number.";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test((d.email || "").trim())) p.email = "Enter a valid email address.";
+      if (!d.consent) p.consent = "Please tick the consent box to continue.";
+      return p;
+    },
+
+    async start(resuming) {
+      try {
+        const a = await API.startAttempt(Quiz.token);
+        Quiz.attempt = a;
+        Quiz.answers = a.answers || {};
+        Quiz.tabSwitches = a.tabSwitches || 0;
+        const ids = a.questions.map((q) => q.id);
+        Quiz.queue = ids.filter((id) => !(id in Quiz.answers));
+        Quiz.seen = new Set();
+        if (Quiz.queue.length === 0 || Date.now() >= a.endsAt) return Quiz.submit(true);
+        if (!resuming) toast("Your clock has started.");
+        Quiz.renderQuestion();
+        Quiz.startTimer();
+        document.addEventListener("visibilitychange", Quiz.onVis);
+      } catch (e) {
+        store.del("boi_token"); Quiz.token = null; Quiz.welcome(e.message);
+      }
+    },
+    onVis() { if (document.hidden && Quiz.attempt) { Quiz.tabSwitches++; Quiz.queueSave(); } },
+    startTimer() {
+      Quiz.stopTimer();
+      Quiz.timerId = setInterval(Quiz.tick, 250);
+      Quiz.tick();
+    },
+    stopTimer() { clearInterval(Quiz.timerId); Quiz.timerId = null; document.removeEventListener("visibilitychange", Quiz.onVis); },
+    tick() {
+      if (!Quiz.attempt) return;
+      const left = Math.max(0, Math.ceil((Quiz.attempt.endsAt - Date.now()) / 1000));
+      const el = document.getElementById("timer");
+      if (el) {
+        const t = document.getElementById("timeText"); if (t) t.textContent = mmss(left);
+        el.classList.toggle("warn", left <= 120 && left > 30);
+        el.classList.toggle("bad", left <= 30);
+      }
+      if (left <= 0 && !Quiz.submitting) Quiz.submit(true);
+    },
+    queueSave() {
+      clearTimeout(Quiz.saveTimer);
+      Quiz.saveTimer = setTimeout(() => { API.saveProgress(Quiz.token, { answers: Quiz.answers, tabSwitches: Quiz.tabSwitches }).catch(() => {}); }, 600);
+    },
+
+    renderQuestion() {
+      const a = Quiz.attempt; const qs = a.questions; const total = qs.length;
+      const qid = Quiz.queue[0]; const q = qs.find((x) => x.id === qid); const idx = qs.indexOf(q);
+      const answered = Object.keys(Quiz.answers).length;
+      const revisit = Quiz.seen.has(qid);
+      Quiz.seen.add(qid);
+      const skippedCount = Quiz.queue.filter((id) => Quiz.seen.has(id) && id !== qid).length;
+      shell(`
+        <div class="stack">
+          <div class="quiz-head">
+            <div><span class="eyebrow">Question ${idx + 1} of ${total}</span><br><span class="small muted num">${answered} answered &middot; ${skippedCount} skipped</span></div>
+            <div class="timer num" id="timer" aria-live="off"><span class="timer-dot"></span><span id="timeText">${mmss(Math.max(0, Math.ceil((a.endsAt - Date.now()) / 1000)))}</span></div>
+          </div>
+          <div class="progress"><i style="width:${Math.round((answered / total) * 100)}%"></i></div>
+          ${revisit ? `<div class="alert info">You skipped this one earlier. It is back for a second look.</div>` : ""}
+          <div class="card stack">
+            <p class="qtext">${esc(q.text)}</p>
+            <div class="options" role="radiogroup" aria-label="Options">
+              ${q.options.map((o) => `<button type="button" class="opt" role="radio" aria-checked="false" data-key="${esc(o.key)}"><span class="key">${esc(o.key)}</span><span>${esc(o.text)}</span></button>`).join("")}
+            </div>
+            <div class="qnav">
+              <button class="btn" id="btnSkip" type="button">Skip for now</button>
+              <button class="btn primary" id="btnNext" type="button" disabled>Next</button>
+            </div>
+          </div>
+          <div class="dots" aria-hidden="true">${qs.map((x) => `<span class="dot ${x.id in Quiz.answers ? "done" : (Quiz.seen.has(x.id) && x.id !== qid ? "skip" : "")} ${x.id === qid ? "now" : ""}"></span>`).join("")}</div>
+          <div class="row between"><span class="small muted">Answers lock when you press Next.</span><button class="btn ghost sm" id="btnFinish" type="button">Finish early</button></div>
+        </div>`, { right: `<span class="pill accent num">${answered}/${total}</span>` });
+
+      let picked = null;
+      const next = document.getElementById("btnNext");
+      document.querySelectorAll(".opt").forEach((b) => b.addEventListener("click", () => {
+        picked = b.dataset.key;
+        document.querySelectorAll(".opt").forEach((x) => { x.classList.toggle("selected", x === b); x.setAttribute("aria-checked", x === b ? "true" : "false"); });
+        next.disabled = false;
+      }));
+      next.addEventListener("click", () => {
+        if (!picked) return;
+        Quiz.answers[qid] = picked; Quiz.queue.shift(); Quiz.queueSave(); Quiz.advance();
+      });
+      document.getElementById("btnSkip").addEventListener("click", () => {
+        if (Quiz.queue.length === 1) { toast("This is the last unanswered question."); return; }
+        Quiz.queue.push(Quiz.queue.shift());
+        Quiz.advance();
+      });
+      document.getElementById("btnFinish").addEventListener("click", async () => {
+        const left = Quiz.queue.length;
+        const ok = await confirmBox({ title: "Finish the quiz now?", body: left ? `${left} question${left > 1 ? "s are" : " is"} still unanswered and will count as wrong.` : "All questions answered. Submit your answers?", okText: "Submit", danger: !!left });
+        if (ok) Quiz.submit(false);
+      });
+    },
+    advance() {
+      if (Quiz.queue.length === 0) return Quiz.submit(false);
+      Quiz.renderQuestion();
+    },
+
+    async submit(auto) {
+      if (Quiz.submitting) return;
+      Quiz.submitting = true; Quiz.stopTimer();
+      shell(`<div class="card stack"><h2>${auto ? "Time is up." : "Submitting..."}</h2><p class="muted">Scoring your answers.</p></div>`);
+      try {
+        const r = await API.submitAttempt(Quiz.token, { answers: Quiz.answers, tabSwitches: Quiz.tabSwitches });
+        Quiz.attempt = null; Quiz.submitting = false;
+        Quiz.showResult(r, auto);
+      } catch (e) { Quiz.submitting = false; shell(`<div class="card stack"><div class="alert bad">${esc(e.message)}</div><button class="btn" onclick="location.reload()">Try again</button></div>`); }
+    },
+
+    showResult(r, timedOut) {
+      Quiz.stopTimer();
+      const wrong = r.review.filter((x) => !x.isCorrect);
+      const pct = Math.round((r.correct / r.total) * 100);
+      const render = (tab) => {
+        shell(`
+          <div class="stack">
+            ${timedOut ? `<div class="alert warn">Time ran out, so your answers were submitted automatically.</div>` : ""}
+            <div class="card stack">
+              <span class="eyebrow">Your result</span>
+              <div class="score-tile">
+                <div class="score-big num">${r.score}<small>/${r.total}</small></div>
+                <div><h2>${esc(r.name)}</h2><p class="muted small">${r.rank ? `Rank <b class="num">#${r.rank}</b> of ${r.totalParticipants} so far` : ""} ${pct >= 80 ? '<span class="pill good">Top form</span>' : pct >= 50 ? '<span class="pill accent">Solid</span>' : '<span class="pill warn">Keep reading</span>'}</p></div>
+              </div>
+              <div class="stat-row num">
+                <div class="stat"><b>${r.correct}</b><span>Correct</span></div>
+                <div class="stat"><b>${r.wrong}</b><span>Wrong</span></div>
+                <div class="stat"><b>${r.skipped}</b><span>Unanswered</span></div>
+                <div class="stat"><b>${mmss(r.timeTakenSec)}</b><span>Time</span></div>
+              </div>
+            </div>
+            <div class="tabs" role="tablist">
+              <button class="tab ${tab === "wrong" ? "active" : ""}" data-t="wrong">Learn from mistakes (${wrong.length})</button>
+              <button class="tab ${tab === "all" ? "active" : ""}" data-t="all">All ${r.total} questions</button>
+              ${settings.leaderboardPublic ? `<button class="tab ${tab === "board" ? "active" : ""}" data-t="board">Ranking</button>` : ""}
+            </div>
+            <div id="tabBody">${tab === "board" ? `<div class="muted small">Loading ranking...</div>` : Quiz.reviewList(tab === "wrong" ? wrong : r.review)}</div>
+          </div>`);
+        document.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => render(b.dataset.t)));
+        if (tab === "board") Board.fill(document.getElementById("tabBody"));
+      };
+      render("wrong");
+    },
+    reviewList(items) {
+      if (!items.length) return `<div class="card tint"><b>Perfect score.</b> Nothing to review.</div>`;
+      return `<div class="review">${items.map((x, i) => `
+        <div class="card flat review-item ${x.isCorrect ? "ok" : ""}">
+          <div class="row between"><span class="eyebrow">Q${x.number}</span>${x.isCorrect ? '<span class="pill good">Correct</span>' : x.yourAnswer ? '<span class="pill bad">Wrong</span>' : '<span class="pill warn">Unanswered</span>'}</div>
+          <p class="qtext" style="font-size:1rem">${esc(x.text)}</p>
+          <div class="options">${x.options.map((o) => `<div class="opt ${o.key === x.correct ? "correct" : (o.key === x.yourAnswer ? "wrong" : "")}" style="cursor:default"><span class="key">${esc(o.key)}</span><span>${esc(o.text)}</span></div>`).join("")}</div>
+          <div class="explain"><b>Why:</b> ${esc(x.explanation)}</div>
+        </div>`).join("")}</div>`;
+    },
+  };
+
+  /* ---------------- Ranking board ---------------- */
+  const Board = {
+    async mount() {
+      shell(`<div class="stack"><div class="hero"><span class="eyebrow">Live ranking</span><h1>Ranking board</h1><p class="muted">Score first, then faster time. Updates as doctors finish.</p></div><div id="boardBody" class="stack"><div class="muted small">Loading...</div></div><a class="btn block" href="#">Back</a></div>`);
+      Board.fill(document.getElementById("boardBody"));
+    },
+    async fill(el) {
+      try {
+        const b = await API.getLeaderboard(store.get("boi_token"));
+        if (!b.rows.length) { el.innerHTML = `<div class="card tint">No one has finished yet. Be the first name on the board.</div>`; return; }
+        el.innerHTML = `<div class="row between"><span class="small muted num">${b.totalParticipants} participant${b.totalParticipants === 1 ? "" : "s"} &middot; top ${b.rows.length}</span><button class="btn sm" id="btnRefresh">Refresh</button></div>
+          <div class="board">${b.rows.map((r) => `<div class="board-row ${r.isMe ? "me" : ""} ${r.rank <= 3 ? "top" : ""}"><span class="rank num">${r.rank <= 3 ? ["&#129351;", "&#129352;", "&#129353;"][r.rank - 1] : "#" + r.rank}</span><div class="who"><b>${esc(r.name)}${r.isMe ? " (you)" : ""}</b><span>${esc(r.institution || "")}</span></div><div class="sc num"><b>${r.score}/${r.total}</b><span>${mmss(r.timeTakenSec)}</span></div></div>`).join("")}</div>
+          ${b.me && !b.rows.some((r) => r.isMe) ? `<div class="board-row me"><span class="rank num">#${b.me.rank}</span><div class="who"><b>${esc(b.me.name)} (you)</b></div><div class="sc num"><b>${b.me.score}/${b.me.total}</b><span>${mmss(b.me.timeTakenSec)}</span></div></div>` : ""}`;
+        document.getElementById("btnRefresh").addEventListener("click", () => Board.fill(el));
+      } catch (e) { el.innerHTML = `<div class="alert bad">${esc(e.message)}</div>`; }
+    },
+  };
+
+  /* ---------------- Admin ---------------- */
+  const Admin = {
+    tab: "overview", token: null,
+    async mount() {
+      Admin.token = (() => { try { return sessionStorage.getItem("boi_admin"); } catch (e) { return null; } })();
+      if (!Admin.token) return Admin.login();
+      Admin.render();
+    },
+    login(err) {
+      shell(`<div class="card stack" style="max-width:420px;margin:0 auto"><h2>Admin sign in</h2>${err ? `<div class="alert bad">${esc(err)}</div>` : ""}
+        <form id="loginForm" class="stack"><div class="field"><label for="a_pw">Password</label><input class="input" type="password" id="a_pw" autocomplete="current-password" required>${settings.demo ? '<span class="hint">Demo password: <b>admin123</b></span>' : ""}</div>
+        <button class="btn primary block" type="submit">Sign in</button><a class="btn ghost block" href="#">Back to quiz</a></form></div>`);
+      document.getElementById("loginForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try { const r = await API.adminLogin(document.getElementById("a_pw").value); Admin.token = r.adminToken; try { sessionStorage.setItem("boi_admin", r.adminToken); } catch (x) {} Admin.render(); }
+        catch (ex) { Admin.login(ex.message); }
+      });
+    },
+    logout() { try { sessionStorage.removeItem("boi_admin"); } catch (e) {} Admin.token = null; API.adminLogout && API.adminLogout(); location.hash = ""; },
+    async guard(fn) {
+      try { return await fn(); } catch (e) { if (/unauthori[sz]ed|sign in/i.test(e.message)) { Admin.token = null; try { sessionStorage.removeItem("boi_admin"); } catch (x) {} Admin.login("Session expired. Sign in again."); } else toast(e.message); throw e; }
+    },
+    render() {
+      const tabs = [["overview", "Overview"], ["questions", "Questions"], ["participants", "Participants"], ["settings", "Settings"]];
+      shell(`<div class="stack">
+        <div class="row between"><div><span class="eyebrow">Admin panel</span><h1>Campaign control</h1></div><div class="row"><a class="btn sm" href="#">View quiz</a><button class="btn sm ghost" id="btnLogout">Sign out</button></div></div>
+        <div class="tabs">${tabs.map(([k, l]) => `<button class="tab ${Admin.tab === k ? "active" : ""}" data-t="${k}">${l}</button>`).join("")}</div>
+        <div id="adminBody"><div class="muted small">Loading...</div></div></div>`, { wide: true });
+      document.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => { Admin.tab = b.dataset.t; Admin.render(); }));
+      document.getElementById("btnLogout").addEventListener("click", Admin.logout);
+      Admin[Admin.tab](document.getElementById("adminBody"));
+    },
+
+    async overview(el) {
+      const s = await Admin.guard(() => API.adminStats(Admin.token));
+      el.innerHTML = `<div class="stack">
+        <div class="grid-4">
+          <div class="kpi"><b class="num">${s.participants}</b><span>Registered</span></div>
+          <div class="kpi"><b class="num">${s.completed}</b><span>Completed</span></div>
+          <div class="kpi"><b class="num">${s.completed ? s.avgScore.toFixed(1) : "0"}</b><span>Average score / ${s.total}</span></div>
+          <div class="kpi"><b class="num">${s.completed ? mmss(Math.round(s.avgTimeSec)) : "00:00"}</b><span>Average time</span></div>
+        </div>
+        <div class="row between"><h2>Question difficulty</h2><span class="small muted">Share of participants who answered correctly</span></div>
+        <div class="table-wrap"><table><thead><tr><th>#</th><th>Question</th><th>Answered</th><th>Correct</th><th style="width:140px">Accuracy</th></tr></thead><tbody>
+          ${s.questionStats.map((q, i) => { const p = q.attempts ? Math.round((q.correct / q.attempts) * 100) : 0; return `<tr><td class="num">${i + 1}</td><td>${esc(q.text)}</td><td class="num">${q.attempts}</td><td class="num">${q.correct}</td><td><div class="row" style="gap:8px"><div class="bar grow ${p < 40 ? "low" : p < 70 ? "mid" : ""}"><i style="width:${p}%"></i></div><span class="num small">${q.attempts ? p + "%" : "n/a"}</span></div></td></tr>`; }).join("")}
+        </tbody></table></div></div>`;
+    },
+
+    async questions(el) {
+      const list = await Admin.guard(() => API.adminQuestions(Admin.token));
+      el.innerHTML = `<div class="stack">
+        <div class="row between"><div><h2>${list.length} questions</h2><span class="small muted">${list.filter((q) => q.active).length} active. Each participant gets ${settings.questionCount} of the active ones, shuffled.</span></div>
+          <div class="row"><button class="btn sm" id="btnImport">Import</button><button class="btn sm" id="btnExportQ">Export JSON</button><button class="btn sm primary" id="btnAdd">Add question</button></div></div>
+        <div class="table-wrap"><table><thead><tr><th>#</th><th>Question</th><th>Answer</th><th>Status</th><th></th></tr></thead><tbody>
+          ${list.map((q, i) => `<tr><td class="num">${i + 1}</td><td>${esc(q.text)}<br><span class="small muted">${["A", "B", "C", "D"].map((k) => `${k}. ${esc(q.options[k])}`).join(" &nbsp; ")}</span></td><td><span class="pill good">${esc(q.correct)}</span></td><td><span class="pill ${q.active ? "accent" : ""}">${q.active ? "Active" : "Hidden"}</span></td><td class="actions"><button class="btn sm" data-edit="${q.id}">Edit</button> <button class="btn sm danger" data-del="${q.id}">Delete</button></td></tr>`).join("")}
+        </tbody></table></div></div>`;
+      el.querySelectorAll("[data-edit]").forEach((b) => b.addEventListener("click", () => Admin.editQuestion(list.find((q) => q.id === b.dataset.edit))));
+      el.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", async () => {
+        if (await confirmBox({ title: "Delete this question?", body: "Existing answers to it stay in the export, but it will no longer be served.", okText: "Delete", danger: true })) { await Admin.guard(() => API.adminDeleteQuestion(Admin.token, b.dataset.del)); toast("Deleted"); Admin.render(); }
+      }));
+      document.getElementById("btnAdd").addEventListener("click", () => Admin.editQuestion(null));
+      document.getElementById("btnExportQ").addEventListener("click", () => Admin.download("questions.json", JSON.stringify(list.map(({ text, options, correct, explanation }) => ({ text, options, correct, explanation })), null, 2), "application/json"));
+      document.getElementById("btnImport").addEventListener("click", () => Admin.importDialog());
+    },
+    editQuestion(q) {
+      const bg = document.createElement("div"); bg.className = "modal-bg";
+      const v = (k) => esc(q ? q.options[k] : "");
+      bg.innerHTML = `<form class="modal" style="max-width:640px" id="qForm"><h2>${q ? "Edit question" : "New question"}</h2>
+        <div class="field"><label for="q_text">Question</label><textarea class="input" id="q_text" required>${esc(q ? q.text : "")}</textarea></div>
+        <div class="grid-2">${["A", "B", "C", "D"].map((k) => `<div class="field"><label for="q_${k}">Option ${k}</label><input class="input" id="q_${k}" value="${v(k)}" required></div>`).join("")}</div>
+        <div class="grid-2"><div class="field"><label for="q_correct">Correct option</label><select class="input" id="q_correct">${["A", "B", "C", "D"].map((k) => `<option ${q && q.correct === k ? "selected" : ""}>${k}</option>`).join("")}</select></div>
+        <div class="field"><label for="q_active">Status</label><select class="input" id="q_active"><option value="1" ${!q || q.active ? "selected" : ""}>Active</option><option value="0" ${q && !q.active ? "selected" : ""}>Hidden</option></select></div></div>
+        <div class="field"><label for="q_expl">Explanation (shown after the quiz)</label><textarea class="input" id="q_expl">${esc(q ? q.explanation : "")}</textarea></div>
+        <div class="row end"><button class="btn" type="button" data-x="no">Cancel</button><button class="btn primary" type="submit">Save</button></div></form>`;
+      bg.querySelector("[data-x=no]").addEventListener("click", () => bg.remove());
+      bg.querySelector("#qForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const g = (id) => bg.querySelector("#" + id).value;
+        const payload = { id: q ? q.id : null, text: g("q_text").trim(), options: { A: g("q_A").trim(), B: g("q_B").trim(), C: g("q_C").trim(), D: g("q_D").trim() }, correct: g("q_correct"), explanation: g("q_expl").trim(), active: g("q_active") === "1" };
+        await Admin.guard(() => API.adminSaveQuestion(Admin.token, payload));
+        bg.remove(); toast("Saved"); Admin.render();
+      });
+      document.body.appendChild(bg);
+    },
+    importDialog() {
+      const bg = document.createElement("div"); bg.className = "modal-bg";
+      bg.innerHTML = `<div class="modal" style="max-width:640px"><h2>Import questions</h2>
+        <p class="muted small">Upload a <b>.json</b> file (same format as Export) or a <b>.csv</b> with columns: <code>question, option_a, option_b, option_c, option_d, correct, explanation</code>. The seed file in the repo is a ready template.</p>
+        <input type="file" id="impFile" accept=".json,.csv,text/csv,application/json" class="input">
+        <label class="check"><input type="checkbox" id="impReplace"><span>Replace all existing questions (otherwise append)</span></label>
+        <div id="impStatus" class="small muted"></div>
+        <div class="row end"><button class="btn" data-x="no">Cancel</button><button class="btn primary" id="impGo" disabled>Import</button></div></div>`;
+      let parsed = null;
+      bg.querySelector("[data-x=no]").addEventListener("click", () => bg.remove());
+      bg.querySelector("#impFile").addEventListener("change", (e) => {
+        const f = e.target.files[0]; if (!f) return;
+        const rd = new FileReader();
+        rd.onload = () => {
+          try { parsed = f.name.toLowerCase().endsWith(".json") ? JSON.parse(rd.result) : Admin.parseCsv(rd.result); }
+          catch (ex) { parsed = null; bg.querySelector("#impStatus").textContent = "Could not read file: " + ex.message; return; }
+          const bad = parsed.filter((q) => !q.text || !q.options || !["A", "B", "C", "D"].every((k) => q.options[k]) || !/^[ABCD]$/.test(q.correct));
+          bg.querySelector("#impStatus").textContent = `${parsed.length} questions found${bad.length ? `, ${bad.length} invalid rows will be skipped` : ""}.`;
+          parsed = parsed.filter((q) => !bad.includes(q));
+          bg.querySelector("#impGo").disabled = !parsed.length;
+        };
+        rd.readAsText(f);
+      });
+      bg.querySelector("#impGo").addEventListener("click", async () => {
+        const r = await Admin.guard(() => API.adminImportQuestions(Admin.token, parsed, bg.querySelector("#impReplace").checked));
+        bg.remove(); toast(`${r.count} questions imported`); Admin.render();
+      });
+      document.body.appendChild(bg);
+    },
+    parseCsv(text) {
+      const rows = []; let row = [], cell = "", inQ = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (inQ) { if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else inQ = false; } else cell += c; }
+        else if (c === '"') inQ = true;
+        else if (c === ",") { row.push(cell); cell = ""; }
+        else if (c === "\n" || c === "\r") { if (c === "\r" && text[i + 1] === "\n") i++; row.push(cell); rows.push(row); row = []; cell = ""; }
+        else cell += c;
+      }
+      if (cell || row.length) { row.push(cell); rows.push(row); }
+      const head = rows.shift().map((h) => h.trim().toLowerCase());
+      const col = (r, name) => r[head.indexOf(name)] ?? "";
+      return rows.filter((r) => r.some((x) => x.trim())).map((r) => ({ text: col(r, "question").trim(), options: { A: col(r, "option_a").trim(), B: col(r, "option_b").trim(), C: col(r, "option_c").trim(), D: col(r, "option_d").trim() }, correct: col(r, "correct").trim().toUpperCase(), explanation: col(r, "explanation").trim() }));
+    },
+
+    async participants(el, q = "") {
+      const list = await Admin.guard(() => API.adminParticipants(Admin.token, { q }));
+      el.innerHTML = `<div class="stack">
+        <div class="row between"><h2>${list.length} participant${list.length === 1 ? "" : "s"}</h2>
+          <div class="row"><input class="input" id="pSearch" placeholder="Search name, BMDC, phone, email" value="${esc(q)}" style="min-width:240px"><button class="btn sm" id="btnCsv1">Export participants CSV</button><button class="btn sm" id="btnCsv2">Export all answers CSV</button></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>BMDC</th><th>Contact</th><th>Institution</th><th>Status</th><th>Score</th><th>Time</th><th>Tab switches</th><th>Registered</th><th></th></tr></thead><tbody>
+          ${list.length ? list.map((p) => `<tr><td><b>${esc(p.name)}</b></td><td class="num">${esc(p.bmdc)}</td><td class="small">${esc(p.phone)}<br>${esc(p.email)}</td><td class="small">${esc(p.institution || "")}</td>
+            <td><span class="pill ${p.status === "completed" ? "good" : p.status === "in_progress" ? "warn" : ""}">${esc(p.status.replace("_", " "))}</span></td>
+            <td class="num">${p.status === "completed" ? `${p.score}/${p.total}` : ""}</td><td class="num">${p.status === "completed" ? mmss(p.timeTakenSec) : ""}</td><td class="num">${p.tabSwitches > 0 ? `<span class="pill ${p.tabSwitches > 3 ? "bad" : "warn"}">${p.tabSwitches}</span>` : "0"}</td><td class="small num">${fmtDate(p.registeredAt)}</td>
+            <td class="actions"><button class="btn sm" data-view="${p.id}" ${p.status === "completed" ? "" : "disabled"}>Answers</button> <button class="btn sm danger" data-del="${p.id}">Remove</button></td></tr>`).join("") : `<tr><td colspan="10" class="muted">No participants yet.</td></tr>`}
+        </tbody></table></div>
+        <p class="small muted">Removing a participant deletes their registration and answers and frees their BMDC number to take the quiz again. Tab switches count how many times the quiz page was hidden during the attempt; a high number may indicate looking up answers.</p></div>`;
+      let st; document.getElementById("pSearch").addEventListener("input", (e) => { clearTimeout(st); st = setTimeout(() => Admin.participants(el, e.target.value), 300); });
+      el.querySelectorAll("[data-del]").forEach((b) => b.addEventListener("click", async () => {
+        if (await confirmBox({ title: "Remove participant?", body: "Their registration, answers and ranking entry will be deleted.", okText: "Remove", danger: true })) { await Admin.guard(() => API.adminDeleteParticipant(Admin.token, b.dataset.del)); toast("Removed"); Admin.participants(el, q); }
+      }));
+      el.querySelectorAll("[data-view]").forEach((b) => b.addEventListener("click", async () => {
+        const ans = await Admin.guard(() => API.adminParticipantAnswers(Admin.token, b.dataset.view));
+        const p = list.find((x) => x.id === b.dataset.view);
+        const bg = document.createElement("div"); bg.className = "modal-bg";
+        bg.innerHTML = `<div class="modal" style="max-width:720px;max-height:90vh;overflow:auto"><div class="row between"><h2>${esc(p.name)}</h2><button class="btn sm" data-x="no">Close</button></div>
+          <div class="table-wrap"><table><thead><tr><th>#</th><th>Question</th><th>Answer</th><th>Correct</th><th></th></tr></thead><tbody>${ans.map((a, i) => `<tr><td class="num">${i + 1}</td><td>${esc(a.text)}</td><td>${esc(a.answer || "skipped")}</td><td>${esc(a.correct)}</td><td>${a.isCorrect ? '<span class="pill good">&#10003;</span>' : '<span class="pill bad">&#10007;</span>'}</td></tr>`).join("")}</tbody></table></div></div>`;
+        bg.querySelector("[data-x=no]").addEventListener("click", () => bg.remove());
+        document.body.appendChild(bg);
+      }));
+      document.getElementById("btnCsv1").addEventListener("click", async () => { const r = await Admin.guard(() => API.adminExport(Admin.token, "participants")); Admin.download(r.filename, r.csv, "text/csv"); });
+      document.getElementById("btnCsv2").addEventListener("click", async () => { const r = await Admin.guard(() => API.adminExport(Admin.token, "answers")); Admin.download(r.filename, r.csv, "text/csv"); });
+    },
+
+    async settings(el) {
+      const s = await Admin.guard(() => API.adminSettings(Admin.token));
+      const toLocal = (ms) => { if (!ms) return ""; const d = new Date(ms); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+      el.innerHTML = `<div class="stack">
+        <form class="card stack" id="setForm"><h2>Quiz settings</h2>
+          <div class="grid-2">
+            <div class="field"><label for="s_name">Campaign name</label><input class="input" id="s_name" value="${esc(s.campaignName)}"></div>
+            <div class="field"><label for="s_sponsor">Brand line</label><input class="input" id="s_sponsor" value="${esc(s.sponsor)}"></div>
+            <div class="field"><label for="s_dur">Duration (minutes)</label><input class="input" id="s_dur" type="number" min="1" max="120" value="${Math.round(s.durationSec / 60)}"></div>
+            <div class="field"><label for="s_count">Questions per attempt</label><input class="input" id="s_count" type="number" min="1" max="200" value="${s.questionCount}"><span class="hint">If fewer active questions exist, all of them are used.</span></div>
+            <div class="field"><label for="s_open">Opens at</label><input class="input" id="s_open" type="datetime-local" value="${toLocal(s.openAt)}"><span class="hint">Leave blank to open immediately.</span></div>
+            <div class="field"><label for="s_close">Closes at</label><input class="input" id="s_close" type="datetime-local" value="${toLocal(s.closeAt)}"><span class="hint">Leave blank for no end date.</span></div>
+          </div>
+          <label class="check"><input type="checkbox" id="s_shuffle" ${s.shuffle ? "checked" : ""}><span>Shuffle question order for every participant</span></label>
+          <label class="check"><input type="checkbox" id="s_board" ${s.leaderboardPublic ? "checked" : ""}><span>Ranking board visible to participants</span></label>
+          <label class="check"><input type="checkbox" id="s_closed" ${s.manualClosed ? "checked" : ""}><span>Pause registration now (overrides the dates)</span></label>
+          <div class="row end"><button class="btn primary" type="submit">Save settings</button></div>
+        </form>
+        <form class="card stack" id="pwForm"><h2>Admin password</h2>
+          <div class="grid-2"><div class="field"><label for="pw_old">Current password</label><input class="input" type="password" id="pw_old" required></div><div class="field"><label for="pw_new">New password</label><input class="input" type="password" id="pw_new" minlength="8" required></div></div>
+          <div class="row end"><button class="btn" type="submit">Change password</button></div></form>
+        <div class="card stack"><h2>Danger zone</h2><p class="muted small">Deletes every participant and their answers. Questions and settings stay. Use before going live to clear test entries.</p><div><button class="btn danger" id="btnReset">Clear all participants</button></div></div>
+      </div>`;
+      document.getElementById("setForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const g = (id) => document.getElementById(id);
+        const payload = { campaignName: g("s_name").value.trim() || "Battle of Interns", sponsor: g("s_sponsor").value.trim(), durationSec: Math.max(60, Number(g("s_dur").value) * 60), questionCount: Math.max(1, Number(g("s_count").value)), openAt: g("s_open").value ? new Date(g("s_open").value).getTime() : null, closeAt: g("s_close").value ? new Date(g("s_close").value).getTime() : null, shuffle: g("s_shuffle").checked, leaderboardPublic: g("s_board").checked, manualClosed: g("s_closed").checked };
+        await Admin.guard(() => API.adminSaveSettings(Admin.token, payload)); toast("Settings saved"); settings = await API.getSettings(); Admin.render();
+      });
+      document.getElementById("pwForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        await Admin.guard(() => API.adminChangePassword(Admin.token, document.getElementById("pw_old").value, document.getElementById("pw_new").value)); toast("Password changed"); e.target.reset();
+      });
+      document.getElementById("btnReset").addEventListener("click", async () => {
+        if (await confirmBox({ title: "Clear all participants?", body: "This cannot be undone. Export the data first if you need it.", okText: "Clear everything", danger: true })) { await Admin.guard(() => API.adminReset(Admin.token)); store.del("boi_token"); toast("Participants cleared"); Admin.tab = "overview"; Admin.render(); }
+      });
+    },
+
+    async download(filename, text, type) {
+      try {
+        if (window.claude && window.claude.use) {
+          const dl = await window.claude.use("downloads");
+          if (dl) { await dl.save({ filename, data: new Blob([text], { type }) }); return; }
+        }
+      } catch (e) { /* viewer declined; fall through */ }
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    },
+  };
+
+  route();
+})();
+
+</script>
+</body>
+</html>

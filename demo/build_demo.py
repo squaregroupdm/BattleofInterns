@@ -61,6 +61,9 @@ full = f"""<!doctype html>
 out = ROOT / "demo/battle-of-interns-demo.html"
 out.write_text(full, encoding="utf-8")
 print("wrote", out, len(full), "bytes")
+# Copy at the repo root so GitHub Pages serves the demo at the project URL.
+(ROOT / "index.html").write_text(full, encoding="utf-8")
+print("wrote", ROOT / "index.html")
 
 # Optional second output: a body-only fragment (used when publishing as a hosted artifact page).
 if len(sys.argv) > 1:

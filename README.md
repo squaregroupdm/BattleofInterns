@@ -4,7 +4,7 @@ Online MCQ quiz for intern doctors, run by Moxaclav (Square Pharmaceuticals PLC)
 
 Two ways to run it:
 
-1. **Demo (no server)**: open `demo/battle-of-interns-demo.html` in any browser. Everything is stored in that browser only. Use it for management approval.
+1. **Demo (no server)**: open `demo/battle-of-interns-demo.html` in any browser, or visit the GitHub Pages copy at https://squaregroupdm.github.io/BattleofInterns/ . Everything is stored in that browser only. Use it for management approval.
 2. **Live site (PHP + SQLite)**: upload the `public` folder to any web host that runs PHP 8. Shared across all participants, with a real ranking board and admin panel.
 
 ---
