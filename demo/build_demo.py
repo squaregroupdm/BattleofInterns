@@ -14,7 +14,8 @@ css = (ROOT / "public/assets/app.css").read_text(encoding="utf-8")
 app_js = (ROOT / "public/assets/app.js").read_text(encoding="utf-8")
 local_js = (ROOT / "demo/api-local.js").read_text(encoding="utf-8")
 questions = json.loads((ROOT / "seed/questions.json").read_text(encoding="utf-8"))
-seed_js = "window.BOI_SEED_QUESTIONS = " + json.dumps(questions, ensure_ascii=False).replace("</", "<\\/") + ";"
+institutions = json.loads((ROOT / "seed/institutions.json").read_text(encoding="utf-8"))
+seed_js = "window.BOI_SEED_QUESTIONS = " + json.dumps(questions, ensure_ascii=False).replace("</", "<\\/") + ";" + "window.BOI_SEED_INSTITUTIONS = " + json.dumps(institutions, ensure_ascii=False) + ";"
 
 FONTS = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&family=Figtree:wght@400;500;600&display=swap">'
 

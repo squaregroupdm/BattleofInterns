@@ -14,7 +14,7 @@ window.BOI_API = (function () {
     const questions = (window.BOI_SEED_QUESTIONS || []).map((q, i) => ({ id: "q" + (i + 1), text: q.text, options: q.options, correct: q.correct, explanation: q.explanation, active: true }));
     const db = {
       settings: { campaignName: "Battle of Interns", sponsor: "Moxaclav", durationSec: 600, questionCount: 30, shuffle: true, leaderboardPublic: true, manualClosed: false, openAt: null, closeAt: null },
-      adminPassword: "admin123", questions, participants: [], attempts: [],
+      adminPassword: "admin123", questions, participants: [], attempts: [], institutions: (window.BOI_SEED_INSTITUTIONS || []).slice(),
     };
     // A few sample finishers so the ranking board is not empty in the demo. Admin > Settings > Clear all participants removes them.
     const samples = [["Dr. Tanvir Ahmed", "Dhaka Medical College Hospital", 27, 412], ["Dr. Nusrat Jahan", "Sir Salimullah Medical College", 26, 388], ["Dr. Rafiul Islam", "Chittagong Medical College", 26, 455], ["Dr. Farhana Haque", "Mymensingh Medical College", 24, 501], ["Dr. Sabbir Hossain", "Rajshahi Medical College", 22, 530], ["Dr. Mehzabin Chowdhury", "Sylhet MAG Osmani Medical College", 19, 572]];
@@ -32,7 +32,7 @@ window.BOI_API = (function () {
     });
     return db;
   }
-  function load() { try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.questions) return s; } catch (e) {} const db = seed(); save(db); return db; }
+  function load() { try { const s = JSON.parse(localStorage.getItem(KEY)); if (s && s.questions) { if (!s.institutions) s.institutions = (window.BOI_SEED_INSTITUTIONS || []).slice(); return s; } } catch (e) {} const db = seed(); save(db); return db; }
   function save(db) { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {} }
 
   function status(s) {
@@ -42,7 +42,8 @@ window.BOI_API = (function () {
     if (s.closeAt && now >= s.closeAt) return "closed";
     return "open";
   }
-  function publicSettings(db) { const s = db.settings; return { campaignName: s.campaignName, sponsor: s.sponsor, durationSec: s.durationSec, questionCount: Math.min(s.questionCount, db.questions.filter((q) => q.active).length) || s.questionCount, leaderboardPublic: s.leaderboardPublic, status: status(s), demo: true }; }
+  function sortedInst(list) { return list.slice().sort((a, b) => a.localeCompare(b, "en", { sensitivity: "base" })); }
+  function publicSettings(db) { const s = db.settings; return { institutions: sortedInst(db.institutions || []), campaignName: s.campaignName, sponsor: s.sponsor, durationSec: s.durationSec, questionCount: Math.min(s.questionCount, db.questions.filter((q) => q.active).length) || s.questionCount, leaderboardPublic: s.leaderboardPublic, status: status(s), demo: true }; }
   function scoreAttempt(db, a) {
     let correct = 0, wrong = 0, skipped = 0;
     for (const qid of a.order) { const q = db.questions.find((x) => x.id === qid); const ans = a.answers[qid]; if (!ans) skipped++; else if (q && ans === q.correct) correct++; else wrong++; }
@@ -179,6 +180,8 @@ window.BOI_API = (function () {
       db.participants.forEach((p) => { const a = db.attempts.find((x) => x.participantId === p.id); const r = rk.find((x) => x.p.id === p.id); rows.push([r ? r.rank : "", p.name, p.bmdc, p.phone, p.email, p.institution, new Date(p.registeredAt).toISOString(), a ? a.status : "registered", a && a.score != null ? a.score : "", a && a.total ? a.total : "", a && a.timeTakenSec != null ? a.timeTakenSec : "", a ? a.tabSwitches : 0, a && a.submittedAt ? new Date(a.submittedAt).toISOString() : ""]); });
       return { filename: `battle-of-interns-participants-${stamp}.csv`, csv: csv(rows) };
     },
+    async adminInstitutions(t) { const db = load(); adminCheck(db, t); return delay(sortedInst(db.institutions || [])); },
+    async adminSaveInstitutions(t, list) { const db = load(); adminCheck(db, t); db.institutions = list === null ? (window.BOI_SEED_INSTITUTIONS || []).slice() : list.map((x) => String(x).trim()).filter(Boolean); save(db); return { ok: true }; },
     async adminSettings(t) { const db = load(); adminCheck(db, t); return delay({ ...db.settings }); },
     async adminSaveSettings(t, s) { const db = load(); adminCheck(db, t); db.settings = { ...db.settings, ...s }; save(db); return { ok: true }; },
     async adminChangePassword(t, oldPw, newPw) { const db = load(); adminCheck(db, t); if (oldPw !== db.adminPassword) fail("Current password is wrong."); if ((newPw || "").length < 8) fail("New password must be at least 8 characters."); db.adminPassword = newPw; save(db); return { ok: true }; },

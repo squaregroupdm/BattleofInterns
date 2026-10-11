@@ -49,6 +49,7 @@ function seed(PDO $pdo): void {
     $defaults = ['campaignName' => 'Battle of Interns', 'sponsor' => 'Moxaclav', 'durationSec' => 600, 'questionCount' => 30, 'shuffle' => true, 'leaderboardPublic' => true, 'manualClosed' => false, 'openAt' => null, 'closeAt' => null];
     foreach ($defaults as $k => $v) { set_setting($k, $v, $pdo); }
     set_setting('admin_hash', password_hash($CFG['initial_admin_password'], PASSWORD_DEFAULT), $pdo);
+    set_setting('institutions', default_institutions(), $pdo);
     if ((int) $pdo->query('SELECT COUNT(*) FROM questions')->fetchColumn() === 0 && is_file($CFG['seed_file'])) {
         $list = json_decode((string) file_get_contents($CFG['seed_file']), true) ?: [];
         $st = $pdo->prepare('INSERT INTO questions (id,text,opt_a,opt_b,opt_c,opt_d,correct,explanation,active,sort,created_at) VALUES (?,?,?,?,?,?,?,?,1,?,?)');
@@ -58,6 +59,11 @@ function seed(PDO $pdo): void {
     }
 }
 $SETTINGS_CACHE = null;
+function default_institutions(): array {
+    global $CFG; $f = dirname($CFG['seed_file']) . '/institutions.json';
+    return is_file($f) ? (json_decode((string) file_get_contents($f), true) ?: []) : [];
+}
+function institutions(): array { $l = setting('institutions'); if (!is_array($l)) $l = default_institutions(); usort($l, fn($a, $b) => strcasecmp($a, $b)); return array_values($l); }
 function setting(string $k, mixed $default = null): mixed {
     global $SETTINGS_CACHE;
     if ($SETTINGS_CACHE === null) { $SETTINGS_CACHE = []; foreach (db()->query('SELECT key, value FROM settings') as $r) { $SETTINGS_CACHE[$r['key']] = json_decode((string) $r['value'], true); } }
@@ -69,7 +75,7 @@ function set_setting(string $k, mixed $v, ?PDO $pdo = null): void {
     if (is_array($SETTINGS_CACHE)) $SETTINGS_CACHE[$k] = $v;
 }
 function all_settings(): array {
-    $out = []; foreach (db()->query('SELECT key, value FROM settings') as $r) { if ($r['key'] !== 'admin_hash') $out[$r['key']] = json_decode((string) $r['value'], true); } return $out;
+    $out = []; foreach (db()->query('SELECT key, value FROM settings') as $r) { if ($r['key'] !== 'admin_hash' && $r['key'] !== 'institutions') $out[$r['key']] = json_decode((string) $r['value'], true); } return $out;
 }
 function quiz_status(): string {
     $now = now_ms();
@@ -81,7 +87,7 @@ function quiz_status(): string {
 function active_count(): int { return (int) db()->query('SELECT COUNT(*) FROM questions WHERE active=1')->fetchColumn(); }
 function public_settings(): array {
     $qc = (int) setting('questionCount', 30); $ac = active_count();
-    return ['campaignName' => setting('campaignName'), 'sponsor' => setting('sponsor'), 'durationSec' => (int) setting('durationSec', 600), 'questionCount' => $ac ? min($qc, $ac) : $qc, 'leaderboardPublic' => (bool) setting('leaderboardPublic'), 'status' => quiz_status(), 'demo' => false];
+    return ['institutions' => institutions(), 'campaignName' => setting('campaignName'), 'sponsor' => setting('sponsor'), 'durationSec' => (int) setting('durationSec', 600), 'questionCount' => $ac ? min($qc, $ac) : $qc, 'leaderboardPublic' => (bool) setting('leaderboardPublic'), 'status' => quiz_status(), 'demo' => false];
 }
 function q_row_to_arr(array $r): array {
     return ['id' => $r['id'], 'text' => $r['text'], 'options' => ['A' => $r['opt_a'], 'B' => $r['opt_b'], 'C' => $r['opt_c'], 'D' => $r['opt_d']], 'correct' => $r['correct'], 'explanation' => $r['explanation'], 'active' => (bool) $r['active']];
@@ -162,6 +168,7 @@ switch ($route) {
         if (!preg_match('/^[A-Z]{1,2}-\d{3,7}$/', $bmdc)) fail('Enter a valid BMDC number, e.g. A-123456.');
         if (!preg_match('/^01[3-9]\d{8}$/', $phone)) fail('Enter an 11-digit Bangladeshi mobile number.');
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) fail('Enter a valid email address.');
+        if (mb_strlen($inst) < 3) fail('Select your medical college, or choose Other and type it.');
         if (empty($in['consent'])) fail('Please tick the consent box to continue.');
         $st = db()->prepare('SELECT * FROM participants WHERE bmdc=? OR email=? OR phone=? LIMIT 1'); $st->execute([$bmdc, $email, $phone]);
         if ($ex = $st->fetch(PDO::FETCH_ASSOC)) {
@@ -307,6 +314,14 @@ switch ($route) {
         $q = db()->query("SELECT p.*, a.id aid, a.status, a.score, a.total, a.time_taken_sec, a.tab_switches, a.late, a.submitted_at FROM participants p LEFT JOIN attempts a ON a.participant_id=p.id ORDER BY a.score DESC, a.time_taken_sec ASC, p.registered_at ASC");
         foreach ($q as $r) { $csv .= csv_line([$r['status'] === 'completed' ? rank_of($r['aid']) : '', $r['name'], $r['bmdc'], $r['phone'], $r['email'], $r['institution'], gmdate('c', (int) ($r['registered_at'] / 1000)), $r['status'] ?: 'registered', $r['score'] ?? '', $r['total'] ?? '', $r['time_taken_sec'] ?? '', $r['tab_switches'] ?? 0, !empty($r['late']) ? 'yes' : '', $r['submitted_at'] ? gmdate('c', (int) ($r['submitted_at'] / 1000)) : '']); }
         out(['filename' => "battle-of-interns-participants-$stamp.csv", 'csv' => $csv]);
+    }
+    case 'admin/institutions': { require_admin(); out(institutions()); }
+    case 'admin/institutions-save': {
+        require_admin(); $list = $in['institutions'] ?? null;
+        if ($list === null) { set_setting('institutions', default_institutions()); out(['ok' => true]); }
+        if (!is_array($list)) fail('Send a list of names.');
+        $clean = []; foreach ($list as $n) { $n = mb_substr(s($n), 0, 120); if ($n !== '' && !in_array($n, $clean, true)) $clean[] = $n; }
+        set_setting('institutions', $clean); out(['ok' => true]);
     }
     case 'admin/settings': { require_admin(); out(all_settings()); }
     case 'admin/settings-save': {

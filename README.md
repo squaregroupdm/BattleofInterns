@@ -15,7 +15,7 @@ Two ways to run it:
 
 | Feature | Detail |
 |---|---|
-| Registration | Name, BMDC registration number, mobile number, email, medical college (optional), consent tick box. Validated on the page and again on the server. |
+| Registration | Name, BMDC registration number, mobile number (11 digits, Bangladeshi format), email (checked for a valid address), medical college (drop-down of 112 Bangladesh medical colleges plus "Other" with free text), consent tick box. Validated on the page and again on the server. |
 | One attempt per doctor | BMDC number, phone and email are each unique. A second registration with the same details is refused. If a doctor refreshes or loses connection mid-quiz, the same device resumes the same attempt with the clock still running. |
 | Timed | 10 minutes by default (admin can change). The end time is fixed by the server when the quiz starts, so closing the tab does not pause it. The page auto-submits at 00:00. Timer turns amber at 2 minutes and red at 30 seconds. |
 | 30 questions, one at a time | Shuffled per participant (admin can switch off). Pick an option, press Next. No going back. |
@@ -36,6 +36,7 @@ There is no link to the admin panel on the quiz page on purpose. Open it by addi
 |---|---|
 | Overview | Registered, completed, average score, average time. Per-question accuracy bars (find the hardest questions). |
 | Questions | Add, edit, hide or delete questions. Import from `.json` or `.csv` (append or replace all). Export all questions as JSON. |
+| Medical colleges | Add or remove colleges from the registration drop-down, filter the list, or restore the built-in list of 112 (`seed/institutions.json`). |
 | Participants | Search by name, BMDC, phone, email or institution. View a participant's full answer sheet. Remove a participant (frees their BMDC number to retake). Export participants CSV (with rank, score, time, tab switches, late flag) and a full answers CSV (one row per question per participant). |
 | Settings | Campaign name and brand line, duration, questions per attempt, open/close times, shuffle on/off, ranking board visible on/off, pause registration. Change admin password. "Clear all participants" to wipe test data before launch. |
 
@@ -56,6 +57,7 @@ battle-of-interns/
   data/                           the SQLite database is created here automatically (keep it out of git)
   seed/questions.json             the 30 starting questions, loaded on first run
   seed/questions.csv              same questions as a CSV template for admin import
+  seed/institutions.json          default list of Bangladesh medical colleges for the drop-down
   demo/battle-of-interns-demo.html  standalone demo, no server needed
   demo/api-local.js               demo version of the API (browser storage)
   demo/build_demo.py              rebuilds the demo file after editing app.js or app.css

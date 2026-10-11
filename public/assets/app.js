@@ -87,6 +87,7 @@
   async function route() {
     try { settings = await API.getSettings(); } catch (e) { /* keep defaults */ }
     const h = location.hash.replace("#", "");
+    document.body.classList.toggle("admin", h === "admin");
     if (h === "admin") return Admin.mount();
     if (h === "board") return Board.mount();
     return Quiz.boot();
@@ -140,7 +141,9 @@
               <div class="field"><label for="f_phone">Mobile number</label><input class="input" id="f_phone" name="phone" inputmode="tel" placeholder="01XXXXXXXXX" required></div>
               <div class="field"><label for="f_email">Email</label><input class="input" id="f_email" name="email" type="email" inputmode="email" placeholder="you@example.com" required></div>
             </div>
-            <div class="field"><label for="f_inst">Medical college / hospital <span class="muted">(optional)</span></label><input class="input" id="f_inst" name="institution" placeholder="e.g. Dhaka Medical College Hospital"></div>
+            <div class="field"><label for="f_inst">Medical college</label>
+              <select class="input" id="f_inst" name="institution" required><option value="">Select your medical college</option>${(settings.institutions || []).map((n) => `<option value="${esc(n)}">${esc(n)}</option>`).join("")}<option value="__other">Other (not in the list)</option></select></div>
+            <div class="field" id="instOtherWrap" hidden><label for="f_inst_other">Name of your medical college</label><input class="input" id="f_inst_other" name="institutionOther" placeholder="Type the full name"></div>
             <label class="check"><input type="checkbox" id="f_consent" name="consent" required><span>I confirm I am an intern doctor and agree that my name and score may appear on the ranking board and that Square Pharmaceuticals may contact me about this campaign.</span></label>
             <button class="btn primary block" type="submit" id="btnStart">Start the quiz</button>
             ${settings.leaderboardPublic ? `<a class="btn ghost block" href="#board">View ranking board</a>` : ""}
@@ -148,10 +151,14 @@
         </div>`);
       const form = document.getElementById("regForm");
       if (!form) return;
+      const instSel = document.getElementById("f_inst"), instOther = document.getElementById("instOtherWrap");
+      instSel.addEventListener("change", () => { instOther.hidden = instSel.value !== "__other"; if (!instOther.hidden) document.getElementById("f_inst_other").focus(); });
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const d = Object.fromEntries(new FormData(form).entries());
         d.consent = form.consent.checked;
+        if (d.institution === "__other") d.institution = (d.institutionOther || "").trim();
+        delete d.institutionOther;
         const problems = Quiz.validate(d);
         form.querySelectorAll(".field").forEach((f) => { f.classList.remove("invalid"); const er = f.querySelector(".err"); if (er) er.remove(); });
         if (Object.keys(problems).length) {
@@ -177,6 +184,7 @@
       if (!/^[A-Z]{1,2}\d{3,7}$/.test((d.bmdc || "").toUpperCase().replace(/[\s-]/g, ""))) p.bmdc = "Enter a valid BMDC number, e.g. A-123456.";
       if (!/^(\+?88)?01[3-9]\d{8}$/.test((d.phone || "").replace(/[\s-]/g, ""))) p.phone = "Enter an 11-digit Bangladeshi mobile number.";
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test((d.email || "").trim())) p.email = "Enter a valid email address.";
+      if (!d.institution || d.institution.trim().length < 3) p.institution = "Select your medical college, or choose Other and type it.";
       if (!d.consent) p.consent = "Please tick the consent box to continue.";
       return p;
     },
@@ -374,7 +382,7 @@
       try { return await fn(); } catch (e) { if (/unauthori[sz]ed|sign in/i.test(e.message)) { Admin.token = null; try { sessionStorage.removeItem("boi_admin"); } catch (x) {} Admin.login("Session expired. Sign in again."); } else toast(e.message); throw e; }
     },
     render() {
-      const tabs = [["overview", "Overview"], ["questions", "Questions"], ["participants", "Participants"], ["settings", "Settings"]];
+      const tabs = [["overview", "Overview"], ["questions", "Questions"], ["participants", "Participants"], ["colleges", "Medical colleges"], ["settings", "Settings"]];
       shell(`<div class="stack">
         <div class="row between"><div><span class="eyebrow">Admin panel</span><h1>Campaign control</h1></div><div class="row"><a class="btn sm" href="#">View quiz</a><button class="btn sm ghost" id="btnLogout">Sign out</button></div></div>
         <div class="tabs">${tabs.map(([k, l]) => `<button class="tab ${Admin.tab === k ? "active" : ""}" data-t="${k}">${l}</button>`).join("")}</div>
@@ -507,6 +515,23 @@
       }));
       document.getElementById("btnCsv1").addEventListener("click", async () => { const r = await Admin.guard(() => API.adminExport(Admin.token, "participants")); Admin.download(r.filename, r.csv, "text/csv"); });
       document.getElementById("btnCsv2").addEventListener("click", async () => { const r = await Admin.guard(() => API.adminExport(Admin.token, "answers")); Admin.download(r.filename, r.csv, "text/csv"); });
+    },
+
+    async colleges(el, q = "") {
+      const list = await Admin.guard(() => API.adminInstitutions(Admin.token));
+      const shown = list.filter((n) => !q || n.toLowerCase().includes(q.toLowerCase()));
+      el.innerHTML = `<div class="stack">
+        <div class="row between"><div><h2>${list.length} medical colleges</h2><span class="small muted">These appear in the registration drop-down, alphabetically. Doctors can also choose "Other" and type a name.</span></div>
+          <form class="row" id="addInst"><input class="input" id="instNew" placeholder="Add a college, e.g. Thakurgaon Medical College, Thakurgaon" style="min-width:300px" required><button class="btn sm primary" type="submit">Add</button></form></div>
+        <div class="row between"><input class="input" id="instSearch" placeholder="Filter list" value="${esc(q)}" style="max-width:280px"><button class="btn sm" id="instReset">Restore default list</button></div>
+        <div class="table-wrap"><table><thead><tr><th>#</th><th>Medical college</th><th></th></tr></thead><tbody>
+          ${shown.map((n, i) => `<tr><td class="num">${i + 1}</td><td>${esc(n)}</td><td class="actions"><button class="btn sm danger" data-rm="${esc(n)}">Remove</button></td></tr>`).join("") || `<tr><td colspan="3" class="muted">No match.</td></tr>`}
+        </tbody></table></div></div>`;
+      const save = async (next) => { await Admin.guard(() => API.adminSaveInstitutions(Admin.token, next)); settings = await API.getSettings(); Admin.colleges(el, document.getElementById("instSearch").value); };
+      document.getElementById("addInst").addEventListener("submit", async (e) => { e.preventDefault(); const v = document.getElementById("instNew").value.trim(); if (!v) return; if (list.some((n) => n.toLowerCase() === v.toLowerCase())) { toast("Already in the list"); return; } await save([...list, v]); toast("Added"); });
+      let st; document.getElementById("instSearch").addEventListener("input", (e) => { clearTimeout(st); st = setTimeout(() => Admin.colleges(el, e.target.value), 250); });
+      el.querySelectorAll("[data-rm]").forEach((b) => b.addEventListener("click", async () => { if (await confirmBox({ title: "Remove this college?", body: b.dataset.rm + " will no longer appear in the drop-down. Existing registrations keep their value.", okText: "Remove", danger: true })) { await save(list.filter((n) => n !== b.dataset.rm)); toast("Removed"); } }));
+      document.getElementById("instReset").addEventListener("click", async () => { if (await confirmBox({ title: "Restore the default list?", body: "Your additions and removals will be replaced by the built-in list of 112 colleges.", okText: "Restore" })) { await save(null); toast("Default list restored"); } });
     },
 
     async settings(el) {
