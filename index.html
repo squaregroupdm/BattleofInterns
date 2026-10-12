@@ -51,6 +51,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { height: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--fg);
@@ -177,9 +178,13 @@ textarea.input { min-height: 88px; resize: vertical; }
 .hero-art { width: 150px; max-width: 100%; color: var(--art-2); justify-self: end; }
 .hero-art .acc { color: var(--accent); }
 @media (max-width: 480px) { .hero { grid-template-columns: 1fr 104px; } .hero-art { width: 104px; } .hero h1 { font-size: 1.7rem; } }
-.rules { display: grid; gap: 10px; }
-.rule { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start; font-size: 0.92rem; }
-.rule-ic { width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft); color: var(--primary); display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; }
+.rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.rule { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow); }
+.rule b { font-family: var(--font-display); font-size: 0.95rem; }
+.rule p { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+.rule-ic { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-soft); color: var(--primary); display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 1rem; }
+.rule-ic svg { width: 24px; height: 24px; }
+@media (max-width: 360px) { .rules { grid-template-columns: 1fr; } }
 
 /* Quiz */
 .quiz-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -590,14 +595,6 @@ window.BOI_API = (function () {
             </div>
             ${HERO_ART}
           </div>
-          <div class="card stack">
-            <div class="rules">
-              <div class="rule"><div class="rule-ic">${settings.questionCount}</div><div><b>MCQ, one at a time</b><br><span class="muted small">Pick one option and press Next. You cannot go back.</span></div></div>
-              <div class="rule"><div class="rule-ic">${Math.round(settings.durationSec / 60)}m</div><div><b>Timed</b><br><span class="muted small">The clock starts when you press Start and runs even if you leave the page.</span></div></div>
-              <div class="rule"><div class="rule-ic">&#8631;</div><div><b>Skip and return</b><br><span class="muted small">Skipped questions come back after you reach the end.</span></div></div>
-              <div class="rule"><div class="rule-ic">&#10003;</div><div><b>Learn after</b><br><span class="muted small">Explanations for every wrong answer appear when you finish, with your rank.</span></div></div>
-            </div>
-          </div>
           ${closed ? `<div class="alert warn">${settings.status === "not_started" ? "The quiz has not opened yet." : "Registration for this quiz is closed."} ${settings.leaderboardPublic ? '<a href="#board">See the ranking board</a>.' : ""}</div>` : `
           <form class="card stack" id="regForm" novalidate>
             <h2>Register to start</h2>
@@ -615,6 +612,12 @@ window.BOI_API = (function () {
             <button class="btn primary block" type="submit" id="btnStart">Start the quiz</button>
             ${settings.leaderboardPublic ? `<a class="btn ghost block" href="#board">View ranking board</a>` : ""}
           </form>`}
+          <div class="rules">
+            <div class="rule"><div class="rule-ic">${settings.questionCount}</div><b>MCQ, one at a time</b><p>Pick one option and press Next. No going back.</p></div>
+            <div class="rule"><div class="rule-ic">${Math.round(settings.durationSec / 60)}m</div><b>On the clock</b><p>The timer starts when you press Start and keeps running if you leave the page.</p></div>
+            <div class="rule"><div class="rule-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h11a4 4 0 0 1 0 8H9"/><path d="M12 11l-3 4 3 4"/></svg></div><b>Skip and return</b><p>Skipped questions come back after the last one.</p></div>
+            <div class="rule"><div class="rule-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M9 7h6M9 11h6"/></svg></div><b>Learn after</b><p>Every wrong answer comes with an explanation, plus your rank.</p></div>
+          </div>
         </div>`);
       const form = document.getElementById("regForm");
       if (!form) return;

@@ -123,14 +123,6 @@
             </div>
             ${HERO_ART}
           </div>
-          <div class="card stack">
-            <div class="rules">
-              <div class="rule"><div class="rule-ic">${settings.questionCount}</div><div><b>MCQ, one at a time</b><br><span class="muted small">Pick one option and press Next. You cannot go back.</span></div></div>
-              <div class="rule"><div class="rule-ic">${Math.round(settings.durationSec / 60)}m</div><div><b>Timed</b><br><span class="muted small">The clock starts when you press Start and runs even if you leave the page.</span></div></div>
-              <div class="rule"><div class="rule-ic">&#8631;</div><div><b>Skip and return</b><br><span class="muted small">Skipped questions come back after you reach the end.</span></div></div>
-              <div class="rule"><div class="rule-ic">&#10003;</div><div><b>Learn after</b><br><span class="muted small">Explanations for every wrong answer appear when you finish, with your rank.</span></div></div>
-            </div>
-          </div>
           ${closed ? `<div class="alert warn">${settings.status === "not_started" ? "The quiz has not opened yet." : "Registration for this quiz is closed."} ${settings.leaderboardPublic ? '<a href="#board">See the ranking board</a>.' : ""}</div>` : `
           <form class="card stack" id="regForm" novalidate>
             <h2>Register to start</h2>
@@ -148,6 +140,12 @@
             <button class="btn primary block" type="submit" id="btnStart">Start the quiz</button>
             ${settings.leaderboardPublic ? `<a class="btn ghost block" href="#board">View ranking board</a>` : ""}
           </form>`}
+          <div class="rules">
+            <div class="rule"><div class="rule-ic">${settings.questionCount}</div><b>MCQ, one at a time</b><p>Pick one option and press Next. No going back.</p></div>
+            <div class="rule"><div class="rule-ic">${Math.round(settings.durationSec / 60)}m</div><b>On the clock</b><p>The timer starts when you press Start and keeps running if you leave the page.</p></div>
+            <div class="rule"><div class="rule-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h11a4 4 0 0 1 0 8H9"/><path d="M12 11l-3 4 3 4"/></svg></div><b>Skip and return</b><p>Skipped questions come back after the last one.</p></div>
+            <div class="rule"><div class="rule-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M9 7h6M9 11h6"/></svg></div><b>Learn after</b><p>Every wrong answer comes with an explanation, plus your rank.</p></div>
+          </div>
         </div>`);
       const form = document.getElementById("regForm");
       if (!form) return;

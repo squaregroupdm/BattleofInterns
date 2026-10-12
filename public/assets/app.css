@@ -42,6 +42,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { height: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--fg);
@@ -168,9 +169,13 @@ textarea.input { min-height: 88px; resize: vertical; }
 .hero-art { width: 150px; max-width: 100%; color: var(--art-2); justify-self: end; }
 .hero-art .acc { color: var(--accent); }
 @media (max-width: 480px) { .hero { grid-template-columns: 1fr 104px; } .hero-art { width: 104px; } .hero h1 { font-size: 1.7rem; } }
-.rules { display: grid; gap: 10px; }
-.rule { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start; font-size: 0.92rem; }
-.rule-ic { width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft); color: var(--primary); display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; }
+.rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.rule { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: var(--shadow); }
+.rule b { font-family: var(--font-display); font-size: 0.95rem; }
+.rule p { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+.rule-ic { width: 44px; height: 44px; border-radius: 12px; background: var(--accent-soft); color: var(--primary); display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; font-size: 1rem; }
+.rule-ic svg { width: 24px; height: 24px; }
+@media (max-width: 360px) { .rules { grid-template-columns: 1fr; } }
 
 /* Quiz */
 .quiz-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
